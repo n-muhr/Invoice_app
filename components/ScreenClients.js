@@ -7,7 +7,7 @@ import FontAwesome, {
 } from 'react-native-fontawesome';
 import { useIsFocused, useFocusEffect  } from '@react-navigation/native';
 
-
+//otevreni databaze InvoiceDB
 const db = SQLite.openDatabase({
     name:'InvoiceDB',
     location: 'default'
@@ -19,12 +19,14 @@ const db = SQLite.openDatabase({
 export default function ScreenClients({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
+  //vytvoreni table clients pokud neexistuje
   const createTable = () =>{
     db.transaction(txn => {
       txn.executeSql('Create table if not exists clients(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), phone VARCHAR(9), address VARCHAR(30), description TEXT)')
     })
   }
 
+  //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) => new Promise((resolve, reject) => {
     db.transaction((trans) => {
       trans.executeSql(sql, params, (trans, results) => {
@@ -36,6 +38,7 @@ export default function ScreenClients({navigation}) {
     });
   });
 
+  //asynchronni funkce pro nacteni klientu z tabulky clients z databaze
   const getClient = async () =>{
     setProfiles([]);
     
@@ -59,6 +62,7 @@ export default function ScreenClients({navigation}) {
 
   }
 
+  //smazani klienta z databaze podle id
   const delClient = async (id) => {
     await ExecuteQuery("delete from clients where id = ?", [id])
   }
