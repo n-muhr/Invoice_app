@@ -57,32 +57,6 @@ export default function ScreenClients({navigation}) {
         setProfiles(Profiles => [...Profiles, Client]);
     }
 
-    /* try{
-      db.transaction((tx)=>{
-        tx.executeSql("select id, name, email, phone, address, description from clients", [], (tx,result) =>{
-          let len = result.rows.length;
-          
-          for(let i = 0; i<len;i++){
-            let item = result.rows.item(i);
-            console.log(item.id, item.name, item.email, item.phone, item.address);
-            let Client = {
-              id: item.id, 
-              name:item.name, 
-              email:item.email, 
-              phone: item.phone, 
-              address: item.address, 
-              description: item.description
-            }
-            let newProfiles = [...Profiles, Client];
-            setProfiles(newProfiles);
-            console.log(i + " " + Profiles);
-          }
-        })
-      })
-    }catch(e){
-      console.log(e);
-    }
- */
   }
 
   const delClient = async (id) => {
