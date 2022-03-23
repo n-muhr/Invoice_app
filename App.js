@@ -3,6 +3,9 @@ import { View, Text, StyleSheet } from "react-native";
 import ScreenInvoice from "./components/ScreenInvoice"
 import ScreenClients from "./components/ScreenClients"
 import Invoice from "./components/Invoice"
+import ProductList from "./components/ProductList"
+import ClientList from "./components/ClientList"
+import ProfilList from "./components/ProfilList"
 import { createStackNavigator } from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs'
 import { NavigationContainer } from '@react-navigation/native';
@@ -86,6 +89,18 @@ export default function App() {
           name="Faktura"
           component={Invoice}
         />
+        <Root.Screen
+          name="Položky"
+          component={ProductList}
+        />
+        <Root.Screen
+          name="Klienti"
+          component={ClientList}
+        />
+        <Tab.Screen 
+          name="Profily"
+          component={ProfilList}
+        /> 
 
       </Root.Navigator>
 

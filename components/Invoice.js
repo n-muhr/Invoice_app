@@ -20,14 +20,17 @@ export default function Invoice({navigation}) {
 
   const clientList = () => {
     console.log("List client");
+    navigation.navigate("Klienti");
   }
 
   const profilList = () => {
     console.log("Profil client");
+    navigation.navigate("Profily");
   }
 
   const itemList = () => {
     console.log("Item client");
+    navigation.navigate("Položky");
   }
 
   return (

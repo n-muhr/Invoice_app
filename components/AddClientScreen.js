@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Pressable, Alert, ScrollView  } from 'react-native'
-import React, { useState} from 'react'
+import React, { useState } from 'react'
 import SQLite from 'react-native-sqlite-storage'
 
 const db = SQLite.openDatabase({
@@ -33,6 +33,7 @@ export default function AddClientScreen({navigation}) {
       navigation.goBack()
     }
   }
+
 
   return (
     <ScrollView style={styles.body}>

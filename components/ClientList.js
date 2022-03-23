@@ -1,5 +1,5 @@
-import { View, Text , Button, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
-import React,{useEffect, useState} from 'react'
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native'
+import React, {useState, useEffect} from 'react'
 import SQLite from 'react-native-sqlite-storage'
 import FontAwesome, {
   SolidIcons,
@@ -9,14 +9,15 @@ import { useIsFocused } from '@react-navigation/native';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase({
-    name:'InvoiceDB',
-    location: 'default'
-    },
-    () => {},
-    error => {console.log(error);}
+  name:'InvoiceDB',
+  location: 'default'
+  },
+  () => {},
+  error => {console.log(error);}
 )
 
-export default function ScreenClients({navigation}) {
+export default function ClientList({navigation}) {
+
   const [Profiles, setProfiles] = useState([]);
 
   //vytvoreni table clients pokud neexistuje
@@ -56,15 +57,8 @@ export default function ScreenClients({navigation}) {
           address: item.address, 
           description: item.description
         }
-        //let newProfiles = [...Profiles, Client];
-        setProfiles(Profiles => [...Profiles, Client]);
+      setProfiles(Profiles => [...Profiles, Client]);
     }
-
-  }
-
-  //smazani klienta z databaze podle id
-  const delClient = async (id) => {
-    await ExecuteQuery("delete from clients where id = ?", [id])
   }
 
   const isFocused =useIsFocused();
@@ -76,7 +70,6 @@ export default function ScreenClients({navigation}) {
     }
   }, [isFocused]);
 
-  
 
   return (
     <View style={styles.body}>
@@ -85,42 +78,27 @@ export default function ScreenClients({navigation}) {
         renderItem={({item}) => (
           <TouchableOpacity 
             style={styles.item}
-            onPress={() => {
-              navigation.navigate('Add client')
-            }}
             >
-            <View style={styles.rows}>
-              <View style={styles.item_body}>
-                <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.description}>{item.description}</Text>
-              </View>
-              <TouchableOpacity 
-                style={styles.del_button}
-                onPress={() => {
-                  delClient(item.id);
-                  getClient();
-                }}
-              >
-                <FontAwesome
-                  icon={SolidIcons.trashAlt}
-                  style={{fontSize:20, color:'red'}}
-                />
-              </TouchableOpacity>
+
+            <View style={styles.item_body}>
+              <Text style={styles.title}>{item.name}</Text>
+              {item.description.length === 0 ? null : <Text style={styles.description}>{item.description}</Text>}
             </View>
-            
+          
           </TouchableOpacity>
         )}
 
       />
+
       <TouchableOpacity style={styles.button} onPress={() => {
         navigation.navigate('Add client');
       }}>
         <FontAwesome
-            style={{fontSize:20, color:'white'}}
-            icon={SolidIcons.plus}
-            />
-
+          style={{fontSize:20, color:'white'}}
+          icon={SolidIcons.plus}
+        />
       </TouchableOpacity>
+
     </View>
   )
 }
@@ -143,15 +121,11 @@ const styles = StyleSheet.create({
   item:{
     justifyContent: 'center',
     marginHorizontal:15,
-    marginVertical:10,
-    backgroundColor: '#fff',
-    borderRadius:10
 
   },
   title: {
     fontSize:25,
     margin:10,
-    paddingHorizontal:10
   },
   description: {
     fontSize:18,
@@ -159,19 +133,9 @@ const styles = StyleSheet.create({
     margin:5,
     paddingHorizontal:10
   },
-  rows: {
-    flexDirection:'row',
-    alignItems: 'center'
-  },
   item_body: {
-    flex:1
+    flex:1,
+    borderColor: '#000',
+    borderBottomWidth: 2
   },
-  del_button: {
-    color: 'red',
-    width:40,
-    height:40,
-    justifyContent: 'center',
-    alignItems:'center',
-    marginRight:15
-  }
 });
