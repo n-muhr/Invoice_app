@@ -1,7 +1,7 @@
-import {SET_CLIENT} from './actions';
+import {SET_CURR_CLIENT} from './actions';
 
 const initialState = {
-  client: {
+  currClient: {
     id: -1,
     name: '',
     email: '',
@@ -13,8 +13,8 @@ const initialState = {
 
 function clientReducer(state = initialState, action) {
   switch (action.type) {
-    case SET_CLIENT:
-      return {...state, client: action.payload};
+    case SET_CURR_CLIENT:
+      return {...state, currClient: action.payload};
     default:
       return state;
   }

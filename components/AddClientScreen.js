@@ -1,96 +1,129 @@
-import { View, Text, StyleSheet, TextInput, Pressable, Alert, ScrollView  } from 'react-native'
-import React, { useState } from 'react'
-import SQLite from 'react-native-sqlite-storage'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import SQLite from 'react-native-sqlite-storage';
+import {useSelector} from 'react-redux';
 
-const db = SQLite.openDatabase({
-  name:'InvoiceDB',
-  location: 'default'
+const db = SQLite.openDatabase(
+  {
+    name: 'InvoiceDB',
+    location: 'default',
   },
   () => {},
-  error => {console.log(error);}
-)
+  error => {
+    console.log(error);
+  },
+);
 
 export default function AddClientScreen({navigation}) {
-
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
 
-  
+  const {currClient} = useSelector(state => state.clientReducer);
 
   const verifyAdd = () => {
-    if(name.length == 0){
-      Alert.alert('Varování', 'Prosím zadejte jméno.')
-    }else{
-      db.transaction((tx) =>{
-        tx.executeSql("insert into clients(name,email,phone,address,description) values (?,?,?,?,?)", [name, email, phone, address, description]);
-      })
+    if (name.length == 0) {
+      Alert.alert('Varování', 'Prosím zadejte jméno.');
+    } else {
+      if (currClient === undefined) {
+        db.transaction(tx => {
+          tx.executeSql(
+            'insert into clients(name,email,phone,address,description) values (?,?,?,?,?)',
+            [name, email, phone, address, description],
+          );
+        });
+        Alert.alert('Nový klient', 'Byl přidán nový klient.');
+      } else {
+        db.transaction(tx => {
+          tx.executeSql(
+            'update clients set name = ?, email = ?, phone = ?, address = ?, description = ? where id = ?',
+            [name, email, phone, address, description, currClient.id],
+          );
+        });
+        Alert.alert('Edit', 'Údaje byly uloženy.');
+      }
 
-
-      Alert.alert('Nový klient', 'Byl přidán nový klient.')
-      navigation.goBack()
+      navigation.goBack();
     }
-  }
+  };
 
+  const setTask = () => {
+    if (currClient === undefined) console.log('New client');
+    else {
+      console.log('Client: ' + currClient.id);
+      setName(currClient.name);
+      setEmail(currClient.email);
+      setAddress(currClient.address);
+      setDescription(currClient.description);
+      setPhone(currClient.phone);
+    }
+  };
+
+  useEffect(() => {
+    setTask();
+  }, []);
 
   return (
     <ScrollView style={styles.body}>
       <View style={styles.body}>
         <TextInput
           value={name}
-          onChangeText={(value) => setName(value)}
+          onChangeText={value => setName(value)}
           style={styles.input}
-          placeholder='Název/Jméno'
+          placeholder="Název/Jméno"
         />
         <TextInput
           value={email}
-          onChangeText={(value) => setEmail(value)}
+          onChangeText={value => setEmail(value)}
           style={styles.input}
-          placeholder='Email'
+          placeholder="Email"
         />
         <TextInput
           value={phone}
-          onChangeText={(value) => setPhone(value)}
+          onChangeText={value => setPhone(value)}
           style={styles.input}
-          placeholder='Phone'
+          placeholder="Phone"
         />
         <TextInput
           value={address}
-          onChangeText={(value) => setAddress(value)}
+          onChangeText={value => setAddress(value)}
           style={styles.input}
-          placeholder='Adresa'
+          placeholder="Adresa"
         />
         <TextInput
           value={description}
-          onChangeText={(value) => setDescription(value)}
+          onChangeText={value => setDescription(value)}
           style={styles.input}
-          placeholder='Poznámka'
+          placeholder="Poznámka"
           multiline
         />
         <Pressable
-              onPress={verifyAdd}
-              android_ripple={{ color: '#00000050' }}
-              style={({ pressed }) => [
-                  { backgroundColor: pressed ? '#dddddd' : '#0b0' },
-                  styles.button
-              ]}
-          >
-              <Text style={styles.buttonText}>
-                  Uložit
-              </Text>
-          </Pressable>
-
+          onPress={verifyAdd}
+          android_ripple={{color: '#00000050'}}
+          style={({pressed}) => [
+            {backgroundColor: pressed ? '#dddddd' : '#0b0'},
+            styles.button,
+          ]}>
+          <Text style={styles.buttonText}>Uložit</Text>
+        </Pressable>
       </View>
     </ScrollView>
-  )
+  );
 }
 
-
 const styles = StyleSheet.create({
-  body :{
-    flex:1
+  body: {
+    flex: 1,
   },
   input: {
     width: '95%',
@@ -103,7 +136,7 @@ const styles = StyleSheet.create({
     margin: 10,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    marginBottom:20
+    marginBottom: 20,
   },
   button: {
     width: '95%',
@@ -120,4 +153,4 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: 'center',
   },
-})
+});

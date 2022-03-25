@@ -12,7 +12,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import AddClientScreen from './components/AddClientScreen';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {Provider} from 'react-redux';
-import {Store} from './redux/store';
+import {Store} from './src/redux/rootReducer';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -53,22 +53,24 @@ const Root = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Root.Navigator
-        screenOptions={{
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-          },
-        }}>
-        <Root.Screen name="My Invoices" component={BottomTabBar} />
-        <Root.Screen name="Add client" component={AddClientScreen} />
-        <Root.Screen name="Faktura" component={Invoice} />
-        <Root.Screen name="Položky" component={ProductList} />
-        <Root.Screen name="Klienti" component={ClientList} />
-        <Tab.Screen name="Profily" component={ProfilList} />
-      </Root.Navigator>
-    </NavigationContainer>
+    <Provider store={Store}>
+      <NavigationContainer>
+        <Root.Navigator
+          screenOptions={{
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontSize: 18,
+              fontWeight: 'bold',
+            },
+          }}>
+          <Root.Screen name="My Invoices" component={BottomTabBar} />
+          <Root.Screen name="Add client" component={AddClientScreen} />
+          <Root.Screen name="Faktura" component={Invoice} />
+          <Root.Screen name="Položky" component={ProductList} />
+          <Root.Screen name="Klienti" component={ClientList} />
+          <Tab.Screen name="Profily" component={ProfilList} />
+        </Root.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
