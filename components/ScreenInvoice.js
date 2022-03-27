@@ -1,60 +1,62 @@
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs'
-import { NavigationContainer } from '@react-navigation/native';
-import FontAwesome, {
-  SolidIcons,
-  RegularIcons
-} from 'react-native-fontawesome';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
+import {setInvoiceClient} from '../src/redux/actions';
+import {useDispatch} from 'react-redux';
 
-function ScreenAll({navigation}){
-  return(
+function ScreenAll({navigation}) {
+  const dispatch = useDispatch();
+  return (
     <View style={styles.body}>
-      <TouchableOpacity style={styles.button} onPress={() => {
-        navigation.navigate('Faktura');
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('Faktura');
+          dispatch(setInvoiceClient());
         }}>
         <FontAwesome
-          style={{fontSize:20, color:'white'}}
+          style={{fontSize: 20, color: 'white'}}
           icon={SolidIcons.plus}
         />
-
       </TouchableOpacity>
     </View>
   );
 }
 
-function ScreenPaid(){
-  return(
+function ScreenPaid() {
+  return (
     <View style={styles.body}>
-      <TouchableOpacity style={styles.button} onPress={() => {
-        navigation.navigate('Faktura');
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('Faktura');
         }}>
         <FontAwesome
-          style={{fontSize:20, color:'white'}}
+          style={{fontSize: 20, color: 'white'}}
           icon={SolidIcons.plus}
         />
-
       </TouchableOpacity>
     </View>
-    );
+  );
 }
 
-function ScreenNotPaid(){
-  return(
+function ScreenNotPaid() {
+  return (
     <View style={styles.body}>
-      <TouchableOpacity style={styles.button} onPress={() => {
-        navigation.navigate('Faktura');
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('Faktura');
         }}>
         <FontAwesome
-          style={{fontSize:20, color:'white'}}
+          style={{fontSize: 20, color: 'white'}}
           icon={SolidIcons.plus}
         />
-
       </TouchableOpacity>
     </View>
-    );
+  );
 }
-
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -62,50 +64,37 @@ export default function ScreenInvoice() {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
-        tabBarOptions:{
-          labelStyle: { fontSize:16, fontWeight:'bold'}
-        }
-      })
-      }
-      >
-        <Tab.Screen 
-          name="Vše"
-          component={ScreenAll}
-        />
-         <Tab.Screen 
-          name="Zaplacené"
-          component={ScreenPaid}
-        /> 
-        <Tab.Screen 
-          name="Nezaplacené"
-          component={ScreenNotPaid}
-        /> 
-        
-      </Tab.Navigator>
-  )
+        tabBarOptions: {
+          labelStyle: {fontSize: 16, fontWeight: 'bold'},
+        },
+      })}>
+      <Tab.Screen name="Vše" component={ScreenAll} />
+      <Tab.Screen name="Zaplacené" component={ScreenPaid} />
+      <Tab.Screen name="Nezaplacené" component={ScreenNotPaid} />
+    </Tab.Navigator>
+  );
 }
 
 const styles = StyleSheet.create({
-  body:{
-    flex:1
+  body: {
+    flex: 1,
   },
   button: {
-    width:50,
-    height:50,
-    borderRadius:30,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
     backgroundColor: '#00f',
     position: 'absolute',
     bottom: 10,
     right: 10,
-    alignItems:"center",
-    justifyContent: 'center'
-  },
-  item:{
+    alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal:15,
-    marginVertical:20,
+  },
+  item: {
+    justifyContent: 'center',
+    marginHorizontal: 15,
+    marginVertical: 20,
     backgroundColor: '#fff',
-    borderRadius:10
-
-  }
+    borderRadius: 10,
+  },
 });

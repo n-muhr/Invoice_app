@@ -1,141 +1,156 @@
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native'
-import React, {useState, useEffect} from 'react'
-import SQLite from 'react-native-sqlite-storage'
-import FontAwesome, {
-  SolidIcons,
-  RegularIcons
-} from 'react-native-fontawesome';
-import { useIsFocused } from '@react-navigation/native';
+import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import SQLite from 'react-native-sqlite-storage';
+import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
+import {useIsFocused} from '@react-navigation/native';
+import {setInvoiceClient, setCurrentClient} from '../src/redux/actions';
+import {useDispatch} from 'react-redux';
 
 //otevreni databaze InvoiceDB
-const db = SQLite.openDatabase({
-  name:'InvoiceDB',
-  location: 'default'
+const db = SQLite.openDatabase(
+  {
+    name: 'InvoiceDB',
+    location: 'default',
   },
   () => {},
-  error => {console.log(error);}
-)
+  error => {
+    console.log(error);
+  },
+);
 
 export default function ClientList({navigation}) {
-
   const [Profiles, setProfiles] = useState([]);
 
+  const dispatch = useDispatch();
+
   //vytvoreni table clients pokud neexistuje
-  const createTable = () =>{
+  const createTable = () => {
     db.transaction(txn => {
-      txn.executeSql('Create table if not exists clients(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), phone VARCHAR(9), address VARCHAR(30), description TEXT)')
-    })
-  }
+      txn.executeSql(
+        'Create table if not exists clients(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), phone VARCHAR(9), address VARCHAR(30), description TEXT)',
+      );
+    });
+  };
 
   //funkce pro provedeni sql query
-  const ExecuteQuery = (sql, params = []) => new Promise((resolve, reject) => {
-    db.transaction((trans) => {
-      trans.executeSql(sql, params, (trans, results) => {
-        resolve(results);
-      },
-        (error) => {
-          reject(error);
-        });
+  const ExecuteQuery = (sql, params = []) =>
+    new Promise((resolve, reject) => {
+      db.transaction(trans => {
+        trans.executeSql(
+          sql,
+          params,
+          (trans, results) => {
+            resolve(results);
+          },
+          error => {
+            reject(error);
+          },
+        );
+      });
     });
-  });
 
   //asynchronni funkce pro nacteni klientu z tabulky clients z databaze
-  const getClient = async () =>{
+  const getClient = async () => {
     setProfiles([]);
-    
-    let selectQuery = await ExecuteQuery("select id, name, email, phone, address, description from clients",[]);
+
+    let selectQuery = await ExecuteQuery(
+      'select id, name, email, phone, address, description from clients',
+      [],
+    );
 
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
-        let item = rows.item(i);
-        console.log(item);
-        let Client = {
-          id: item.id, 
-          name:item.name, 
-          email:item.email, 
-          phone: item.phone, 
-          address: item.address, 
-          description: item.description
-        }
+      let item = rows.item(i);
+      console.log(item);
+      let Client = {
+        id: item.id,
+        name: item.name,
+        email: item.email,
+        phone: item.phone,
+        address: item.address,
+        description: item.description,
+      };
       setProfiles(Profiles => [...Profiles, Client]);
     }
-  }
+  };
 
-  const isFocused =useIsFocused();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if(isFocused){
+    if (isFocused) {
       createTable();
       getClient();
     }
   }, [isFocused]);
-
 
   return (
     <View style={styles.body}>
       <FlatList
         data={Profiles}
         renderItem={({item}) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.item}
-            >
-
+            onPress={() => {
+              navigation.goBack();
+              dispatch(setInvoiceClient(item.id));
+            }}>
             <View style={styles.item_body}>
               <Text style={styles.title}>{item.name}</Text>
-              {item.description.length === 0 ? null : <Text style={styles.description}>{item.description}</Text>}
+              {item.description.length === 0 ? null : (
+                <Text style={styles.description}>{item.description}</Text>
+              )}
             </View>
-          
           </TouchableOpacity>
         )}
-
       />
 
-      <TouchableOpacity style={styles.button} onPress={() => {
-        navigation.navigate('Add client');
-      }}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('Add client');
+          dispatch(setCurrentClient());
+        }}>
         <FontAwesome
-          style={{fontSize:20, color:'white'}}
+          style={{fontSize: 20, color: 'white'}}
           icon={SolidIcons.plus}
         />
       </TouchableOpacity>
-
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  body:{
-    flex:1
+  body: {
+    flex: 1,
   },
   button: {
-    width:50,
-    height:50,
-    borderRadius:30,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
     backgroundColor: '#00f',
     position: 'absolute',
     bottom: 10,
     right: 10,
-    alignItems:"center",
-    justifyContent: 'center'
-  },
-  item:{
+    alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal:15,
-
+  },
+  item: {
+    justifyContent: 'center',
+    marginHorizontal: 15,
   },
   title: {
-    fontSize:25,
-    margin:10,
+    fontSize: 25,
+    margin: 10,
   },
   description: {
-    fontSize:18,
+    fontSize: 18,
     color: '#999',
-    margin:5,
-    paddingHorizontal:10
+    margin: 5,
+    paddingHorizontal: 10,
   },
   item_body: {
-    flex:1,
+    flex: 1,
     borderColor: '#000',
-    borderBottomWidth: 2
+    borderBottomWidth: 2,
   },
 });

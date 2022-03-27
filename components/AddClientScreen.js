@@ -57,7 +57,7 @@ export default function AddClientScreen({navigation}) {
     }
   };
 
-  const setTask = () => {
+  const setClient = () => {
     if (currClient === undefined) console.log('New client');
     else {
       console.log('Client: ' + currClient.id);
@@ -70,7 +70,7 @@ export default function AddClientScreen({navigation}) {
   };
 
   useEffect(() => {
-    setTask();
+    setClient();
   }, []);
 
   return (
