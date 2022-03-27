@@ -18,23 +18,29 @@ const initialStateClient = {
 };
 
 const initialStateProfile = {
-  currClient: {
+  currProfile: {
     id: -1,
     name: '',
     email: '',
-    phone: '',
     address: '',
     description: '',
+    ICO: '',
+    DIC: '',
+    pays_dph: false,
+    descriptive_number: '',
+    city: '',
   },
 };
 
 const initialStateInvoice = {
   currInvoice: {
     id: -1,
-    client_id: '',
-    profil_id: '',
-    paid: false,
-    pay_until: '',
+    date_of_issue: '',
+    due_date: '',
+    invoice_number: '',
+    taxable_supply: '',
+    total_cost: '',
+    payment_method: '',
   },
   invoceClient: -1,
   invoiceProfile: -1,

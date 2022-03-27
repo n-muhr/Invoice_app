@@ -8,17 +8,26 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  Button,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import SQLite from 'react-native-sqlite-storage';
 import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
+import DatePicker from 'react-native-date-picker';
 
 export default function Invoice({navigation}) {
   const [profil, setProfil] = useState('');
   const [client, setClient] = useState('');
   const [cost, setCost] = useState(100);
+
   const [isEnabled, setIsEnabled] = useState(false);
+
+  const [dueDate, setDueDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
+
+  const [taxableDate, setTaxableDate] = useState(new Date());
+  const [openTaxable, setOpenTaxable] = useState(false);
 
   const {invoceClient, invoceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
@@ -70,14 +79,14 @@ export default function Invoice({navigation}) {
         <View style={styles.body}>
           <TouchableOpacity style={styles.item_body} onPress={profilList}>
             <View style={styles.rows}>
-              <Text style={styles.text}>Od: </Text>
+              <Text style={styles.text}>Dodavatel: </Text>
               <Text style={styles.text}>{profil}</Text>
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.item_body} onPress={clientList}>
             <View style={styles.rows}>
-              <Text style={styles.text}>Pro: </Text>
+              <Text style={styles.text}>Odběratel: </Text>
               <Text style={styles.text}>{client}</Text>
             </View>
           </TouchableOpacity>
@@ -102,6 +111,54 @@ export default function Invoice({navigation}) {
               />
             </View>
           </View>
+          <TouchableOpacity
+            style={styles.item_body}
+            onPress={() => setOpen(true)}>
+            <View>
+              <Text style={styles.text}>
+                Datum splatnosti: {dueDate.toString().split(' ')[1]}{' '}
+                {dueDate.toString().split(' ')[2]}{' '}
+                {dueDate.toString().split(' ')[3]}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <DatePicker
+            modal
+            open={open}
+            date={dueDate}
+            mode="date"
+            onConfirm={dueDate => {
+              setOpen(false);
+              setDueDate(dueDate);
+            }}
+            onCancel={() => {
+              setOpen(false);
+            }}
+          />
+          <TouchableOpacity
+            style={styles.item_body}
+            onPress={() => setOpenTaxable(true)}>
+            <View>
+              <Text style={styles.text}>
+                Zdanitelné splnění: {taxableDate.toString().split(' ')[1]}{' '}
+                {taxableDate.toString().split(' ')[2]}{' '}
+                {taxableDate.toString().split(' ')[3]}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <DatePicker
+            modal
+            open={openTaxable}
+            date={taxableDate}
+            mode="date"
+            onConfirm={taxableDate => {
+              setOpenTaxable(false);
+              setTaxableDate(taxableDate);
+            }}
+            onCancel={() => {
+              setOpenTaxable(false);
+            }}
+          />
         </View>
       </ScrollView>
 
