@@ -1,6 +1,5 @@
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
 import {setInvoiceClient} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
@@ -58,20 +57,22 @@ function ScreenNotPaid() {
   );
 }
 
-const Tab = createMaterialTopTabNavigator();
-
-export default function ScreenInvoice() {
+export default function ScreenInvoice({navigation}) {
+  const dispatch = useDispatch();
   return (
-    <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarOptions: {
-          labelStyle: {fontSize: 16, fontWeight: 'bold'},
-        },
-      })}>
-      <Tab.Screen name="Vše" component={ScreenAll} />
-      <Tab.Screen name="Zaplacené" component={ScreenPaid} />
-      <Tab.Screen name="Nezaplacené" component={ScreenNotPaid} />
-    </Tab.Navigator>
+    <View style={styles.body}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('Faktura');
+          dispatch(setInvoiceClient());
+        }}>
+        <FontAwesome
+          style={{fontSize: 20, color: 'white'}}
+          icon={SolidIcons.plus}
+        />
+      </TouchableOpacity>
+    </View>
   );
 }
 
