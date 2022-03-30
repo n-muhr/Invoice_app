@@ -4,6 +4,7 @@ import {
   SET_CURR_INVOICE,
   SET_INVOICE_CLIENT,
   SET_INVOICE_PROFILE,
+  SET_INVOICES,
 } from './actions';
 
 const initialStateClient = {
@@ -39,11 +40,13 @@ const initialStateInvoice = {
     id: -1,
     date_of_issue: '',
     due_date: '',
-    invoice_number: '',
     taxable_supply: '',
     total_cost: '',
     payment_method: '',
+    client_id: -1,
+    profile_id: -1,
   },
+  invoiceList: [],
 };
 
 export const clientReducer = (state = initialStateClient, action) => {
@@ -72,6 +75,8 @@ export const invoiceReducer = (state = initialStateInvoice, action) => {
       return {...state, invoiceClient: action.payload};
     case SET_INVOICE_PROFILE:
       return {...state, invoiceProfile: action.payload};
+    case SET_INVOICES:
+      return {...state, invoiceList: action.payload};
     default:
       return state;
   }

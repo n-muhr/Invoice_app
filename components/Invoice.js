@@ -19,10 +19,21 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 
 const Tab = createMaterialTopTabNavigator();
 
+const db = SQLite.openDatabase(
+  {
+    name: 'InvoiceDB',
+    location: 'default',
+  },
+  () => {},
+  error => {
+    console.log(error);
+  },
+);
+
 export default function Invoice({navigation}) {
   const [profil, setProfile] = useState('');
   const [client, setClient] = useState('');
-  const [cost, setCost] = useState(100);
+  const [cost, setCost] = useState(0);
 
   const [isEnabled, setIsEnabled] = useState(false);
 

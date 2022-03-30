@@ -93,8 +93,8 @@ export default function ScreenProfile({navigation}) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    createTable();
     if (isFocused) {
-      createTable();
       getProfile();
     }
   }, [isFocused]);
@@ -118,8 +118,8 @@ export default function ScreenProfile({navigation}) {
               <TouchableOpacity
                 style={styles.del_button}
                 onPress={() => {
-                  delClient(item.id);
-                  getClient();
+                  delProfile(item.id);
+                  getProfile();
                 }}>
                 <FontAwesome
                   icon={SolidIcons.trashAlt}
