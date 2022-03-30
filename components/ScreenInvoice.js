@@ -1,7 +1,7 @@
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
-import {setInvoiceClient} from '../src/redux/actions';
+import {setInvoiceClient, setInvoiceProfile} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
 
 function ScreenAll({navigation}) {
@@ -13,6 +13,7 @@ function ScreenAll({navigation}) {
         onPress={() => {
           navigation.navigate('Faktura');
           dispatch(setInvoiceClient());
+          dispatch(setInvoiceProfile());
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}

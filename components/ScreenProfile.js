@@ -1,9 +1,16 @@
-import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import SQLite from 'react-native-sqlite-storage';
-import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
+import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
-import {setInvoiceProfile, setCurrentProfile} from '../src/redux/actions';
+import {setCurrentProfile} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
 
 //otevreni databaze InvoiceDB
@@ -18,7 +25,7 @@ const db = SQLite.openDatabase(
   },
 );
 
-export default function ProfileList({navigation}) {
+export default function ScreenProfile({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
@@ -78,6 +85,11 @@ export default function ProfileList({navigation}) {
     }
   };
 
+  //smazani profilu z databaze podle id
+  const delProfile = async id => {
+    await ExecuteQuery('delete from profile where id = ?', [id]);
+  };
+
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -95,24 +107,34 @@ export default function ProfileList({navigation}) {
           <TouchableOpacity
             style={styles.item}
             onPress={() => {
-              navigation.goBack();
-              dispatch(setInvoiceProfile(item.id));
+              dispatch(setCurrentProfile(item));
+              navigation.navigate('Přidat profil');
             }}>
-            <View style={styles.item_body}>
-              <Text style={styles.title}>{item.name}</Text>
-              {item.description.length === 0 ? null : (
+            <View style={styles.rows}>
+              <View style={styles.item_body}>
+                <Text style={styles.title}>{item.name}</Text>
                 <Text style={styles.description}>{item.description}</Text>
-              )}
+              </View>
+              <TouchableOpacity
+                style={styles.del_button}
+                onPress={() => {
+                  delClient(item.id);
+                  getClient();
+                }}>
+                <FontAwesome
+                  icon={SolidIcons.trashAlt}
+                  style={{fontSize: 20, color: 'red'}}
+                />
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
       />
-
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.navigate('Přidat profil');
           dispatch(setCurrentProfile());
+          navigation.navigate('Přidat profil');
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}
@@ -141,10 +163,14 @@ const styles = StyleSheet.create({
   item: {
     justifyContent: 'center',
     marginHorizontal: 15,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
   },
   title: {
     fontSize: 25,
     margin: 10,
+    paddingHorizontal: 10,
   },
   description: {
     fontSize: 18,
@@ -152,9 +178,19 @@ const styles = StyleSheet.create({
     margin: 5,
     paddingHorizontal: 10,
   },
+  rows: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   item_body: {
     flex: 1,
-    borderColor: '#000',
-    borderBottomWidth: 2,
+  },
+  del_button: {
+    color: 'red',
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
   },
 });

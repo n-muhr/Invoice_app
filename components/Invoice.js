@@ -20,7 +20,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 const Tab = createMaterialTopTabNavigator();
 
 export default function Invoice({navigation}) {
-  const [profil, setProfil] = useState('');
+  const [profil, setProfile] = useState('');
   const [client, setClient] = useState('');
   const [cost, setCost] = useState(100);
 
@@ -32,7 +32,7 @@ export default function Invoice({navigation}) {
   const [taxableDate, setTaxableDate] = useState(new Date());
   const [openTaxable, setOpenTaxable] = useState(false);
 
-  const {invoceClient, invoceProfile, currInvoice} = useSelector(
+  const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
   );
 
@@ -197,10 +197,15 @@ export default function Invoice({navigation}) {
   };
 
   const setInvoice = () => {
-    if (invoceClient !== undefined) {
-      console.log(invoceClient);
-      setClient(invoceClient);
-    }
+    if (invoiceClient !== undefined) {
+      console.log(invoiceClient);
+      setClient(invoiceClient);
+    } else console.log('Klient není definován');
+
+    if (invoiceProfile !== undefined) {
+      console.log(invoiceProfile);
+      setProfile(invoiceProfile);
+    } else console.log('Profil není definován');
   };
 
   const getMonth = str => {

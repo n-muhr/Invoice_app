@@ -105,7 +105,7 @@ export default function ScreenClients({navigation}) {
             style={styles.item}
             onPress={() => {
               dispatch(setCurrentClient(item));
-              navigation.navigate('Add client');
+              navigation.navigate('Přidat klienta');
             }}>
             <View style={styles.rows}>
               <View style={styles.item_body}>
@@ -131,7 +131,7 @@ export default function ScreenClients({navigation}) {
         style={styles.button}
         onPress={() => {
           dispatch(setCurrentClient());
-          navigation.navigate('Add client');
+          navigation.navigate('Přidat klienta');
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}

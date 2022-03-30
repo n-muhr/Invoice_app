@@ -32,7 +32,7 @@ export const setInvoiceClient = invoiceClient => dispatch => {
   });
 };
 
-export const setInvoiceProfil = invoiceProfile => dispatch => {
+export const setInvoiceProfile = invoiceProfile => dispatch => {
   dispatch({
     type: SET_INVOICE_PROFILE,
     payload: invoiceProfile,

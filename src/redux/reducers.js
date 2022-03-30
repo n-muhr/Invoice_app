@@ -23,16 +23,18 @@ const initialStateProfile = {
     name: '',
     email: '',
     address: '',
+    descriptive_number: '',
     description: '',
     ICO: '',
     DIC: '',
     pays_dph: false,
-    descriptive_number: '',
     city: '',
   },
 };
 
 const initialStateInvoice = {
+  invoiceClient: -1,
+  invoiceProfile: -1,
   currInvoice: {
     id: -1,
     date_of_issue: '',
@@ -42,8 +44,6 @@ const initialStateInvoice = {
     total_cost: '',
     payment_method: '',
   },
-  invoceClient: -1,
-  invoiceProfile: -1,
 };
 
 export const clientReducer = (state = initialStateClient, action) => {
@@ -69,9 +69,9 @@ export const invoiceReducer = (state = initialStateInvoice, action) => {
     case SET_CURR_INVOICE:
       return {...state, currInvoice: action.payload};
     case SET_INVOICE_CLIENT:
-      return {...state, invoceClient: action.payload};
+      return {...state, invoiceClient: action.payload};
     case SET_INVOICE_PROFILE:
-      return {...state, invoceProfile: action.payload};
+      return {...state, invoiceProfile: action.payload};
     default:
       return state;
   }
