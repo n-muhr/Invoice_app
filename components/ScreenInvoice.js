@@ -31,13 +31,13 @@ export default function ScreenInvoice({navigation}) {
 
   const [Invoices, setInvoices] = useState([]);
 
-  const {InvoicesList} = useSelector(state => state.invoiceReducer);
+  const {invoiceList} = useSelector(state => state.invoiceReducer);
 
   //vytvoreni table invoice pokud neexistuje
   const createTable = () => {
     db.transaction(txn => {
       txn.executeSql(
-        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), total_cost decimal(10,5), payment_amount VARCHAR(20), client_id integer, profile_id integer)',
+        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), total_cost decimal(10,5), payment_method VARCHAR(20), client_id integer, profile_id integer)',
       );
     });
   };
@@ -63,7 +63,7 @@ export default function ScreenInvoice({navigation}) {
     setInvoices([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, total_cost, payment_amount, client_id, profile_id from invoice',
+      'select id, date_of_issue, due_date, taxable_supply, total_cost, payment_method, client_id, profile_id from invoice',
       [],
     );
 
@@ -87,7 +87,7 @@ export default function ScreenInvoice({navigation}) {
   };
 
   const updateInvoice = () => {
-    setInvoices(InvoicesList);
+    setInvoices(invoiceList);
   };
 
   useEffect(() => {

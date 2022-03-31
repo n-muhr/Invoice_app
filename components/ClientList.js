@@ -107,7 +107,7 @@ export default function ClientList({navigation}) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.navigate('Add client');
+          navigation.navigate('Přidat klienta');
           dispatch(setCurrentClient());
         }}>
         <FontAwesome

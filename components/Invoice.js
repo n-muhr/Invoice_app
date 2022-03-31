@@ -2,13 +2,11 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   Pressable,
   Alert,
   ScrollView,
   TouchableOpacity,
   Switch,
-  Button,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import SQLite from 'react-native-sqlite-storage';
@@ -16,6 +14,7 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {Picker} from '@react-native-picker/picker';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -33,6 +32,7 @@ const db = SQLite.openDatabase(
 export default function Invoice({navigation}) {
   const [profil, setProfile] = useState('');
   const [client, setClient] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [cost, setCost] = useState(0);
 
   const [isEnabled, setIsEnabled] = useState(false);
@@ -42,6 +42,8 @@ export default function Invoice({navigation}) {
 
   const [taxableDate, setTaxableDate] = useState(new Date());
   const [openTaxable, setOpenTaxable] = useState(false);
+
+  const [selectedValue, setSelectedValue] = useState('hotovost');
 
   const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
@@ -148,6 +150,14 @@ export default function Invoice({navigation}) {
                 setOpenTaxable(false);
               }}
             />
+            {/* <Picker
+              selectedValue={selectedLanguage}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedLanguage(itemValue)
+              }>
+              <Picker.Item label="Hotovost" value="hotovost" />
+              <Picker.Item label="Platba kartou" value="karta" />
+            </Picker> */}
           </View>
         </ScrollView>
 
@@ -184,6 +194,46 @@ export default function Invoice({navigation}) {
 
   const saveInvoice = () => {
     console.log('Save');
+
+    let time_now =
+      dueDate.toString().split(' ')[2] +
+      '.' +
+      getMonth(dueDate.toString().split(' ')[1]) +
+      '.' +
+      dueDate.toString().split(' ')[3];
+
+    let due_now =
+      dueDate.toString().split(' ')[2] +
+      '.' +
+      getMonth(dueDate.toString().split(' ')[1]) +
+      '.' +
+      dueDate.toString().split(' ')[3];
+
+    let tax_now =
+      taxableDate.toString().split(' ')[2] +
+      '.' +
+      getMonth(taxableDate.toString().split(' ')[1]) +
+      '.' +
+      taxableDate.toString().split(' ')[3];
+
+    console.log(time_now);
+
+    if (currInvoice === undefined) {
+      db.transaction(tx => {
+        tx.executeSql(
+          'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, client_id, profile_id) values(?,?,?,?,?,?,?)',
+          [time_now, due_now, tax_now, cost, paymentMethod, client, profil],
+        );
+      });
+    } else {
+      db.transaction(tx => {
+        tx.executeSql(
+          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, total_cost = ?, payment_method = ?, client_id = ?, profile_id = ?',
+          [time_now, due_now, tax_now, cost, paymentMethod, client, profil],
+        );
+      });
+    }
+
     navigation.goBack();
   };
 
