@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
 import {
@@ -37,7 +37,7 @@ export default function ScreenInvoice({navigation}) {
   const createTable = () => {
     db.transaction(txn => {
       txn.executeSql(
-        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), total_cost decimal(10,5), payment_method VARCHAR(20), client_id integer, profile_id integer)',
+        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), total_cost decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer)',
       );
     });
   };
@@ -63,7 +63,7 @@ export default function ScreenInvoice({navigation}) {
     setInvoices([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, total_cost, payment_method, client_id, profile_id from invoice',
+      'select id, date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id from invoice',
       [],
     );
 
@@ -78,11 +78,12 @@ export default function ScreenInvoice({navigation}) {
         taxable_supply: item.taxable_supply,
         total_cost: item.total_cost,
         payment_method: item.payment_method,
+        paid: item.paid,
         client_id: item.client_id,
         profile_id: item.profile_id,
       };
       setInvoices(Invoices => [...Invoices, Invoice]);
-      dispatch(setInvoices(Invoices));
+      //dispatch(setInvoices(Invoices));
     }
   };
 
@@ -95,12 +96,45 @@ export default function ScreenInvoice({navigation}) {
     getInvoice();
     if (isFocused) {
       console.log('focus invoice list');
-      updateInvoice();
+      //updateInvoice();
     }
   }, [isFocused]);
 
   return (
     <View style={styles.body}>
+      <FlatList
+        data={Invoices}
+        renderItem={({item}) => (
+          <TouchableOpacity
+            style={styles.item}
+            onPress={() => {
+              navigation.navigate('Faktura');
+              dispatch(setInvoiceClient());
+              dispatch(setInvoiceProfile());
+              dispatch(setCurrentInvoce(item));
+            }}>
+            <View style={styles.rows}>
+              <View style={styles.item_body}>
+                <Text style={styles.text}>ID faktury: {item.id}</Text>
+                <Text style={styles.text}>
+                  Datum vytvoření:{' '}
+                  {new Date(item.date_of_issue).toLocaleDateString()}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.del_button}
+                onPress={() => {
+                  console.log('Del invoice');
+                }}>
+                <FontAwesome
+                  icon={SolidIcons.trashAlt}
+                  style={{fontSize: 20, color: 'red'}}
+                />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
@@ -140,4 +174,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
   },
+  rows: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  item_body: {
+    flex: 1,
+  },
+  del_button: {
+    color: 'red',
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  text: {color: 'black', fontSize: 18, margin: 5, paddingHorizontal: 15},
 });

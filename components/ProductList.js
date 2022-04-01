@@ -79,7 +79,6 @@ export default function ProductList() {
           </View>
         )}
       />
-
       <View style={styles.add_item}>
         <TextInput
           value={description}

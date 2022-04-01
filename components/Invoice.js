@@ -14,7 +14,7 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {Picker} from '@react-native-picker/picker';
+import SelectDropdown from 'react-native-select-dropdown';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -29,13 +29,15 @@ const db = SQLite.openDatabase(
   },
 );
 
+const methods = ['Hotovost', 'Platba kartou', 'Bankovní převod'];
+
 export default function Invoice({navigation}) {
   const [profil, setProfile] = useState('');
   const [client, setClient] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('Hotovost');
   const [cost, setCost] = useState(0);
 
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
 
   const [dueDate, setDueDate] = useState(new Date());
   const [open, setOpen] = useState(false);
@@ -43,7 +45,7 @@ export default function Invoice({navigation}) {
   const [taxableDate, setTaxableDate] = useState(new Date());
   const [openTaxable, setOpenTaxable] = useState(false);
 
-  const [selectedValue, setSelectedValue] = useState('hotovost');
+  const [createdDate, setCreatedDate] = useState(new Date());
 
   const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
@@ -80,12 +82,12 @@ export default function Invoice({navigation}) {
               <View style={styles.rows}>
                 <Text style={styles.text}>Je zaplacená</Text>
                 <Switch
-                  value={isEnabled}
+                  value={isPaid}
                   onValueChange={() => {
-                    setIsEnabled(previousState => !previousState);
+                    setIsPaid(previousState => !previousState);
                   }}
                   trackColor={{false: '#767577', true: '#81b0ff'}}
-                  thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                  thumbColor={isPaid ? '#f5dd4b' : '#f4f3f4'}
                   ios_backgroundColor="#3e3e3e"
                 />
               </View>
@@ -150,14 +152,20 @@ export default function Invoice({navigation}) {
                 setOpenTaxable(false);
               }}
             />
-            {/* <Picker
-              selectedValue={selectedLanguage}
-              onValueChange={(itemValue, itemIndex) =>
-                setSelectedLanguage(itemValue)
-              }>
-              <Picker.Item label="Hotovost" value="hotovost" />
-              <Picker.Item label="Platba kartou" value="karta" />
-            </Picker> */}
+            <SelectDropdown
+              data={methods}
+              onSelect={(selectedItem, index) => {
+                console.log(selectedItem, index);
+                setPaymentMethod(selectedItem);
+              }}
+              defaultValue={paymentMethod}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+            />
           </View>
         </ScrollView>
 
@@ -221,15 +229,33 @@ export default function Invoice({navigation}) {
     if (currInvoice === undefined) {
       db.transaction(tx => {
         tx.executeSql(
-          'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, client_id, profile_id) values(?,?,?,?,?,?,?)',
-          [time_now, due_now, tax_now, cost, paymentMethod, client, profil],
+          'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id) values(?,?,?,?,?,?,?,?)',
+          [
+            dueDate,
+            dueDate,
+            taxableDate,
+            cost,
+            paymentMethod,
+            isPaid,
+            client,
+            profil,
+          ],
         );
       });
     } else {
       db.transaction(tx => {
         tx.executeSql(
-          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, total_cost = ?, payment_method = ?, client_id = ?, profile_id = ?',
-          [time_now, due_now, tax_now, cost, paymentMethod, client, profil],
+          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, total_cost = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?',
+          [
+            dueDate.toDateString(),
+            dueDate.toDateString(),
+            taxableDate.toDateString(),
+            cost,
+            paymentMethod,
+            isPaid,
+            client,
+            profil,
+          ],
         );
       });
     }
@@ -261,12 +287,23 @@ export default function Invoice({navigation}) {
     if (invoiceClient !== undefined) {
       console.log(invoiceClient);
       setClient(invoiceClient);
-    } else console.log('Klient není definován');
+    } else console.log('Client not defined');
 
     if (invoiceProfile !== undefined) {
       console.log(invoiceProfile);
       setProfile(invoiceProfile);
-    } else console.log('Profil není definován');
+    } else console.log('Profile not defined');
+
+    if (currInvoice !== undefined) {
+      setProfile(currInvoice.profile_id);
+      setClient(currInvoice.client_id);
+      setCost(currInvoice.total_cost);
+      setPaymentMethod(currInvoice.payment_method);
+      setIsPaid(currInvoice.paid);
+      setDueDate(new Date(currInvoice.due_date));
+      setTaxableDate(new Date(currInvoice.taxable_supply));
+      setCreatedDate(new Date(currInvoice.date_of_issue));
+    } else console.log('New Invoice');
   };
 
   const getMonth = str => {
@@ -347,11 +384,16 @@ const styles = StyleSheet.create({
     margin: 10,
     paddingHorizontal: 15,
   },
-  text: {},
+  text: {
+    color: '#000',
+    fontSize: 16,
+  },
   text_cost: {
     right: 0,
     position: 'absolute',
     paddingHorizontal: 10,
+    color: '#000',
+    fontSize: 16,
   },
   button: {
     width: '45%',
