@@ -15,6 +15,7 @@ import {useIsFocused} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import SelectDropdown from 'react-native-select-dropdown';
+import InvoicePreview from './InvoicePreview';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -188,14 +189,6 @@ export default function Invoice({navigation}) {
           ]}>
           <Text style={styles.buttonText}>Uložit</Text>
         </Pressable>
-      </View>
-    );
-  };
-
-  const InvoicePreview = () => {
-    return (
-      <View style={styles.body}>
-        <Text>náhled</Text>
       </View>
     );
   };
