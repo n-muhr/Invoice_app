@@ -1,4 +1,4 @@
-export const pdfContent = () => {
+export const pdfContent = item => {
   const htmlStyles = `
 *{
   border: 0;

@@ -1,10 +1,29 @@
 import {StyleSheet, Text, View, Dimensions, Pressable} from 'react-native';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
+import {useSelector} from 'react-redux';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import {pdfContent} from './PDFContent';
 
 export default function InvoicePreview() {
   const source = {
     uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test1.pdf',
+  };
+
+  const {currInvoice} = useSelector(state => state.invoiceReducer);
+
+  const [PDFPath, setPDFPath] = useState('');
+
+  const createPDF = async id => {
+    let name = 'test' + currInvoice.id;
+    let options = {
+      html: pdfContent(currInvoice),
+      fileName: name,
+      directory: 'Download',
+    };
+
+    let file = await RNHTMLtoPDF.convert(options);
+    setPDFPath(item => (item = file.filePath));
   };
 
   return (
@@ -23,6 +42,10 @@ export default function InvoicePreview() {
         style={styles.pdf}
       />
       <Pressable
+        onPress={() => {
+          createPDF();
+          console.log(PDFPath);
+        }}
         android_ripple={{color: '#00000050'}}
         style={({pressed}) => [
           {backgroundColor: pressed ? '#dddddd' : '#0b0'},

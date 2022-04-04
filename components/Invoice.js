@@ -16,6 +16,8 @@ import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import SelectDropdown from 'react-native-select-dropdown';
 import InvoicePreview from './InvoicePreview';
+import {useDispatch} from 'react-redux';
+import {setCurrentInvoce} from '../src/redux/actions';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -33,7 +35,7 @@ const db = SQLite.openDatabase(
 const methods = ['Hotovost', 'Platba kartou', 'Bankovní převod'];
 
 export default function Invoice({navigation}) {
-  const [profil, setProfile] = useState('');
+  const [profile, setProfile] = useState('');
   const [client, setClient] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Hotovost');
   const [cost, setCost] = useState(0);
@@ -54,6 +56,8 @@ export default function Invoice({navigation}) {
 
   const isFocused = useIsFocused();
 
+  const dispatch = useDispatch();
+
   const InvoiceDetail = () => {
     return (
       <View style={styles.body}>
@@ -62,7 +66,7 @@ export default function Invoice({navigation}) {
             <TouchableOpacity style={styles.item_body} onPress={profilList}>
               <View style={styles.rows}>
                 <Text style={styles.text}>Dodavatel: </Text>
-                <Text style={styles.text}>{profil}</Text>
+                <Text style={styles.text}>{profile}</Text>
               </View>
             </TouchableOpacity>
 
@@ -194,44 +198,21 @@ export default function Invoice({navigation}) {
   };
 
   const saveInvoice = () => {
-    console.log('Save');
-
-    let time_now =
-      dueDate.toString().split(' ')[2] +
-      '.' +
-      getMonth(dueDate.toString().split(' ')[1]) +
-      '.' +
-      dueDate.toString().split(' ')[3];
-
-    let due_now =
-      dueDate.toString().split(' ')[2] +
-      '.' +
-      getMonth(dueDate.toString().split(' ')[1]) +
-      '.' +
-      dueDate.toString().split(' ')[3];
-
-    let tax_now =
-      taxableDate.toString().split(' ')[2] +
-      '.' +
-      getMonth(taxableDate.toString().split(' ')[1]) +
-      '.' +
-      taxableDate.toString().split(' ')[3];
-
-    console.log(time_now);
+    let time_now = new Date();
 
     if (currInvoice === undefined) {
       db.transaction(tx => {
         tx.executeSql(
           'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id) values(?,?,?,?,?,?,?,?)',
           [
-            dueDate,
-            dueDate,
-            taxableDate,
+            time_now.toDateString(),
+            dueDate.toDateString(),
+            taxableDate.toDateString(),
             cost,
             paymentMethod,
             isPaid,
             client,
-            profil,
+            profile,
           ],
         );
       });
@@ -240,20 +221,34 @@ export default function Invoice({navigation}) {
         tx.executeSql(
           'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, total_cost = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?',
           [
-            dueDate.toDateString(),
+            time_now.toDateString(),
             dueDate.toDateString(),
             taxableDate.toDateString(),
             cost,
             paymentMethod,
             isPaid,
             client,
-            profil,
+            profile,
           ],
         );
       });
     }
 
-    navigation.goBack();
+    let invoice = {
+      id: currInvoice.id,
+      date_of_issue: currInvoice.date_of_issue,
+      due_date: dueDate,
+      taxable_supply: taxableDate,
+      total_cost: cost,
+      payment_method: paymentMethod,
+      paid: isPaid,
+      client_id: client,
+      profile_id: profile,
+    };
+
+    dispatch(setCurrentInvoce(invoice));
+    console.log('Save');
+    //navigation.goBack();
   };
 
   const deleteInvoice = () => {
@@ -277,16 +272,6 @@ export default function Invoice({navigation}) {
   };
 
   const setInvoice = () => {
-    if (invoiceClient !== undefined) {
-      console.log(invoiceClient);
-      setClient(invoiceClient);
-    } else console.log('Client not defined');
-
-    if (invoiceProfile !== undefined) {
-      console.log(invoiceProfile);
-      setProfile(invoiceProfile);
-    } else console.log('Profile not defined');
-
     if (currInvoice !== undefined) {
       setProfile(currInvoice.profile_id);
       setClient(currInvoice.client_id);
@@ -297,6 +282,16 @@ export default function Invoice({navigation}) {
       setTaxableDate(new Date(currInvoice.taxable_supply));
       setCreatedDate(new Date(currInvoice.date_of_issue));
     } else console.log('New Invoice');
+
+    if (invoiceClient !== undefined) {
+      console.log(invoiceClient);
+      setClient(invoiceClient);
+    } else console.log('Client not defined');
+
+    if (invoiceProfile !== undefined) {
+      console.log(invoiceProfile);
+      setProfile(invoiceProfile);
+    } else console.log('Profile not defined');
   };
 
   const getMonth = str => {

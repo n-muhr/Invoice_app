@@ -11,8 +11,6 @@ import {useDispatch} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import {pdfContent} from './PDFContent';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -89,18 +87,6 @@ export default function ScreenInvoice({navigation}) {
     }
   };
 
-  const createPDF = async id => {
-    let name = 'test' + id;
-    let options = {
-      html: pdfContent(),
-      fileName: name,
-      directory: 'Download',
-    };
-
-    let file = await RNHTMLtoPDF.convert(options);
-    console.log(file.filePath);
-  };
-
   const updateInvoice = () => {
     setInvoices(invoiceList);
   };
@@ -139,7 +125,6 @@ export default function ScreenInvoice({navigation}) {
                 style={styles.del_button}
                 onPress={() => {
                   console.log('create invoice');
-                  createPDF(item.id);
                 }}>
                 <FontAwesome
                   icon={SolidIcons.inbox}
