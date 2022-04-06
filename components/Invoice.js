@@ -18,6 +18,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import InvoicePreview from './InvoicePreview';
 import {useDispatch} from 'react-redux';
 import {setCurrentInvoce} from '../src/redux/actions';
+import {getLastInvoice, ExecuteQuery} from './database';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -257,21 +258,18 @@ export default function Invoice({navigation}) {
   };
 
   const clientList = () => {
-    console.log('List client');
     navigation.navigate('Klienti');
   };
 
   const profilList = () => {
-    console.log('Profil client');
     navigation.navigate('Profily');
   };
 
   const itemList = () => {
-    console.log('Item client');
     navigation.navigate('Položky');
   };
 
-  const setInvoice = () => {
+  const setInvoice = async () => {
     if (currInvoice !== undefined) {
       setProfile(currInvoice.profile_id);
       setClient(currInvoice.client_id);
@@ -281,7 +279,27 @@ export default function Invoice({navigation}) {
       setDueDate(new Date(currInvoice.due_date));
       setTaxableDate(new Date(currInvoice.taxable_supply));
       setCreatedDate(new Date(currInvoice.date_of_issue));
-    } else console.log('New Invoice');
+    } else {
+      await ExecuteQuery(
+        'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id) values(?,?,?,?,?,?,?,?)',
+        [
+          dueDate.toDateString(),
+          dueDate.toDateString(),
+          taxableDate.toDateString(),
+          cost,
+          paymentMethod,
+          isPaid,
+          client,
+          profile,
+        ],
+      );
+
+      let invoice = await getLastInvoice();
+      console.log('New Invoice');
+      //console.log(invoice);
+      dispatch(setCurrentInvoce(invoice));
+      //console.log(currInvoice);
+    }
 
     if (invoiceClient !== undefined) {
       console.log(invoiceClient);

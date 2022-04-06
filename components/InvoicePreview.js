@@ -4,47 +4,64 @@ import Pdf from 'react-native-pdf';
 import {useSelector} from 'react-redux';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {pdfContent} from './PDFContent';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function InvoicePreview() {
-  const source = {
-    uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test1.pdf',
-  };
-
   const {currInvoice} = useSelector(state => state.invoiceReducer);
 
   const [PDFPath, setPDFPath] = useState('');
+  let source = {uri: ''};
+  currInvoice !== undefined
+    ? (source = {
+        uri:
+          'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test' +
+          currInvoice.id +
+          '.pdf',
+      })
+    : (source = {
+        uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test1.pdf',
+      });
 
   const createPDF = async id => {
     let name = 'test' + currInvoice.id;
     let options = {
-      html: pdfContent(currInvoice),
+      html: await pdfContent(currInvoice),
       fileName: name,
       directory: 'Download',
     };
 
     let file = await RNHTMLtoPDF.convert(options);
     setPDFPath(item => (item = file.filePath));
+    //console.log(PDFPath);
   };
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      createPDF();
+    }
+  }, [PDFPath, isFocused]);
 
   return (
     <View style={styles.container}>
       <Pdf
         source={source}
         onLoadComplete={(numberOfPages, filePath) => {
-          console.log(`Number of pages: ${numberOfPages}`);
+          //console.log(`Number of pages: ${numberOfPages}`);
         }}
         onError={error => {
           console.log(error);
         }}
         onPressLink={uri => {
-          console.log(`Link pressed: ${uri}`);
+          //console.log(`Link pressed: ${uri}`);
         }}
         style={styles.pdf}
       />
       <Pressable
         onPress={() => {
           createPDF();
-          console.log(PDFPath);
+          //console.log(PDFPath);
         }}
         android_ripple={{color: '#00000050'}}
         style={({pressed}) => [

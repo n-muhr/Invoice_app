@@ -9,35 +9,22 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import SQLite from 'react-native-sqlite-storage';
-
-const db = SQLite.openDatabase(
-  {
-    name: 'InvoiceDB',
-    location: 'default',
-  },
-  () => {},
-  error => {
-    console.log(error);
-  },
-);
+import {
+  createTableProduct,
+  addProductDatabase,
+  deleteProduct,
+  ExecuteQuery,
+} from './database';
+import {useSelector} from 'react-redux';
 
 export default function ProductList() {
-  const [products, setProducts] = useState([
-    //{description: 'Produkt 1', price: 100, quantity: 1},
-  ]);
+  const [products, setProducts] = useState([]);
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [dph, setDPH] = useState('');
 
-  //vytvoreni table invoice pokud neexistuje
-  const createTable = () => {
-    db.transaction(txn => {
-      txn.executeSql(
-        'Create table if not exists product(id INTEGER PRIMARY KEY AUTOINCREMENT, invoice_id integer, description TEXT, price decimal(10,5), quantity integer)',
-      );
-    });
-  };
+  const {currInvoice} = useSelector(state => state.invoiceReducer);
 
   const addProduct = () => {
     if (
@@ -48,21 +35,54 @@ export default function ProductList() {
       !isNaN(quantity)
     ) {
       let product = {
+        invoice_id: currInvoice.id,
         description: description,
         price: Number(price),
         quantity: Number(quantity),
+        dph: Number(dph),
       };
-      console.log(description);
-      console.log(product);
       let newProducts = [...products, product];
       setProducts(newProducts);
+      addProductDatabase(product);
     } else {
       console.log('wrong data');
     }
   };
 
+  const delProduct = id => {
+    deleteProduct(id);
+    getProducts();
+  };
+
+  const getProducts = async () => {
+    try {
+      setProducts([]);
+      let selectQuery = await ExecuteQuery(
+        'select id, invoice_id,description, price, quantity, dph from product where invoice_id = ?',
+        [currInvoice.id],
+      );
+      var rows = selectQuery.rows;
+      for (let i = 0; i < rows.length; i++) {
+        let item = rows.item(i);
+        let product = {
+          id: item.id,
+          invoice_id: item.invoice_id,
+          description: item.description,
+          price: item.price,
+          quantity: item.quantity,
+          dph: item.dph,
+        };
+        setProducts(Products => [...Products, product]);
+        console.log(product);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    createTable();
+    createTableProduct();
+    getProducts();
   }, []);
 
   return (
@@ -71,11 +91,23 @@ export default function ProductList() {
         data={products}
         renderItem={({item}) => (
           <View style={styles.item}>
-            <Text>{item.description}</Text>
+            <Text>Popis: {item.description}</Text>
             <View style={styles.row}>
-              <Text>{item.price}</Text>
-              <Text>{item.quantity}</Text>
+              <Text>Cena: {item.price}</Text>
+              <Text>Množství: {item.quantity}</Text>
+              <Text>DPH: {item.dph}%</Text>
             </View>
+            <Pressable
+              onPress={() => {
+                delProduct(item.id);
+              }}
+              android_ripple={{color: '#00000050'}}
+              style={({pressed}) => [
+                {backgroundColor: pressed ? '#dddddd' : '#b00'},
+                styles.button,
+              ]}>
+              <Text style={styles.buttonText}>Odebrat</Text>
+            </Pressable>
           </View>
         )}
       />
@@ -101,9 +133,18 @@ export default function ProductList() {
             style={styles.input}
             placeholder="Množství"
           />
+          <TextInput
+            value={dph}
+            keyboardType="numeric"
+            onChangeText={value => setDPH(value)}
+            style={styles.input}
+            placeholder="DPH"
+          />
         </View>
         <Pressable
-          onPress={addProduct}
+          onPress={() => {
+            addProduct();
+          }}
           android_ripple={{color: '#00000050'}}
           style={({pressed}) => [
             {backgroundColor: pressed ? '#dddddd' : '#00f'},

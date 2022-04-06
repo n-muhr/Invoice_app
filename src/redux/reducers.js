@@ -5,6 +5,7 @@ import {
   SET_INVOICE_CLIENT,
   SET_INVOICE_PROFILE,
   SET_INVOICES,
+  SET_PRODUCTS,
 } from './actions';
 
 const initialStateClient = {
@@ -49,6 +50,15 @@ const initialStateInvoice = {
   invoiceList: [],
 };
 
+const initialStateProduct = {
+  id: -1,
+  invoice_id: -1,
+  description: '',
+  price: '',
+  quantity: '',
+  dph: '',
+};
+
 export const clientReducer = (state = initialStateClient, action) => {
   switch (action.type) {
     case SET_CURR_CLIENT:
@@ -62,6 +72,15 @@ export const profileReducer = (state = initialStateProfile, action) => {
   switch (action.type) {
     case SET_CURR_PROFILE:
       return {...state, currProfile: action.payload};
+    default:
+      return state;
+  }
+};
+
+export const productReducer = (state = initialStateProduct, action) => {
+  switch (action.type) {
+    case SET_PRODUCTS:
+      return {...state, products: action.payload};
     default:
       return state;
   }

@@ -1,4 +1,6 @@
-export const pdfContent = item => {
+import {getProfile, getClient} from './database';
+
+export const pdfContent = async item => {
   const htmlStyles = `
 *{
   border: 0;
@@ -63,6 +65,28 @@ table.balance td { text-align: right; }
 aside h1 { border: none; border-width: 0 0 1px; margin: 0 0 1em; }
 aside h1 { border-color: #999; border-bottom-style: solid; }
 `;
+  let profile = {
+    id: -1,
+    name: '',
+    email: '',
+    address: '',
+    descriptive_number: '',
+    description: '',
+    ICO: '',
+    DIC: '',
+    pays_dph: false,
+    city: '',
+  };
+  let client = {
+    id: -1,
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    description: '',
+  };
+  if (item.profile_id !== '') profile = await getProfile(item.profile_id);
+  if (item.client_id !== '') client = await getClient(item.client_id);
 
   const htmlContent = `
         <html>
@@ -76,11 +100,22 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
           </head>
           <body>
             <header>
-              <h1>Invoice</h1>
+              <h1>Faktura</h1>
               <address>
-                <p>name</p>
-                <p>address</p>
-                <p>phone</p>
+                <p style="font-size:20px">Dodavatel</p>
+                <p>${profile.name}</p>
+                <p>${profile.address}</p>
+                <p>${profile.descriptive_number}, ${profile.city}</p>
+                <p>IČO: ${profile.ico}</p>
+                <p>DIČ: ${profile.dic}</p>
+              </address>
+
+              <address style="float: right">
+                <p style="font-size:20px">Odběratel</p>
+                <p>${client.name}</p>
+                <p>${client.address}</p>
+                <p>${profile.descriptive_number}, ${profile.city}</p>
+                <p>IČO: ${profile.ico}</p>
               </address>
             </header>
             <article>
@@ -91,11 +126,11 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               <table class="meta">
                 <tr>
                   <th><span>Invoice #</span></th>
-                  <td><span>101138</span></td>
+                  <td><span>${item.id}</span></td>
                 </tr>
                 <tr>
-                  <th><span>Date</span></th>
-                  <td><span>${new Date()}</span></td>
+                  <th><span>Datum vystavení</span></th>
+                  <td><span>${item.date_of_issue}</span></td>
                 </tr>
                 <tr>
                   <th><span>Amount Due</span></th>
@@ -105,20 +140,24 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               <table class="inventory">
                 <thead>
                   <tr>
-                    <th><span>Item</span></th>
-                    <th><span>Description</span></th>
-                    <th><span>Rate</span></th>
-                    <th><span>Quantity</span></th>
-                    <th><span>Price</span></th>
+                    <th><span>Popis</span></th>
+                    <th><span>Množství</span></th>
+                    <th><span>Cena za kus</span></th>
+                    <th><span>%DPH</span></th>
+                    <th><span>Bez DPH</span></th>
+                    <th><span>DPH</span></th>
+                    <th><span>Celkem</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><span>Front End Consultation</span></td>
-                    <td><span>Experience Review</span></td>
-                    <td><span data-prefix>$</span><span>amt</span></td>
-                    <td><span>4</span></td>
-                    <td><span data-prefix>$</span><span>amt</span></td>
+                    <td><span>Popis produktu</span></td>
+                    <td><span>množství</span></td>
+                    <td><span data-prefix>Cena za kus</span><span>amt</span></td>
+                    <td><span>DPH</span></td>
+                    <td><span data-prefix>$</span><span>bez DPH</span></td>
+                    <td><span>DPH</span></td>
+                    <td><span data-prefix>$</span><span>Celkem</span></td>
                   </tr>
                 </tbody>
               </table>
