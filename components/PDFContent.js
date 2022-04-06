@@ -1,4 +1,4 @@
-import {getProfile, getClient} from './database';
+import {getProfile, getClient, getProducts} from './database';
 
 export const pdfContent = async item => {
   const htmlStyles = `
@@ -87,6 +87,32 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
   };
   if (item.profile_id !== '') profile = await getProfile(item.profile_id);
   if (item.client_id !== '') client = await getClient(item.client_id);
+  let products = await getProducts(item.id);
+  let productTable = '';
+  let total_cost = 0;
+  for (let i = 0; i < products.length; i++) {
+    let total_price = products[i].price * products[i].quantity;
+    let dph_price = (total_price * products[i].dph) / 100;
+    productTable = productTable + '<tr>';
+    productTable =
+      productTable + '<td><span>' + products[i].description + '</span></td>';
+    productTable =
+      productTable +
+      '<td><span>' +
+      products[i].quantity +
+      ' ks' +
+      '</span></td>';
+    productTable =
+      productTable + '<td><span>' + products[i].price + '</span></td>';
+    productTable =
+      productTable + '<td><span>' + products[i].dph + ' %' + '</span></td>';
+    productTable = productTable + '<td><span>' + total_price + '</span></td>';
+    productTable = productTable + '<td><span>' + dph_price + '</span></td>';
+    productTable =
+      productTable + '<td><span>' + (total_price + dph_price) + '</span></td>';
+    productTable = productTable + '</tr>';
+    total_cost += total_price + dph_price;
+  }
 
   const htmlContent = `
         <html>
@@ -110,7 +136,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 <p>DIČ: ${profile.dic}</p>
               </address>
 
-              <address style="float: right">
+              <address style="padding-left: 100px;">
                 <p style="font-size:20px">Odběratel</p>
                 <p>${client.name}</p>
                 <p>${client.address}</p>
@@ -120,23 +146,40 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
             </header>
             <article>
               <h1>Recipient</h1>
-              <address>
-                <p>company<br>c/o name</p>
-              </address>
-              <table class="meta">
+              
+                <table class="meta">
                 <tr>
                   <th><span>Invoice #</span></th>
                   <td><span>${item.id}</span></td>
                 </tr>
                 <tr>
                   <th><span>Datum vystavení</span></th>
-                  <td><span>${item.date_of_issue}</span></td>
+                  <td><span>${new Date(
+                    item.date_of_issue,
+                  ).toLocaleDateString()}</span></td>
                 </tr>
                 <tr>
-                  <th><span>Amount Due</span></th>
-                  <td><span id="prefix">$</span><span>ammount</span></td>
+                  <th><span>Datum splatnosti</span></th>
+                  <td><span>${new Date(
+                    item.due_date,
+                  ).toLocaleDateString()}</span></td>
+                </tr>
+                <tr>
+                  <th><span>Zdanitelné plnění</span></th>
+                  <td><span>${new Date(
+                    item.taxable_supply,
+                  ).toLocaleDateString()}</span></td>
                 </tr>
               </table>
+
+              <table class="meta" style="float: left;">
+                <tr>
+                  <th><span>Způsob platby</span></th>
+                  <td><span>${item.payment_method}</span></td>
+                </tr>
+              </table>
+
+
               <table class="inventory">
                 <thead>
                   <tr>
@@ -151,27 +194,21 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 </thead>
                 <tbody>
                   <tr>
-                    <td><span>Popis produktu</span></td>
-                    <td><span>množství</span></td>
-                    <td><span data-prefix>Cena za kus</span><span>amt</span></td>
-                    <td><span>DPH</span></td>
-                    <td><span data-prefix>$</span><span>bez DPH</span></td>
-                    <td><span>DPH</span></td>
-                    <td><span data-prefix>$</span><span>Celkem</span></td>
+                    ${productTable}
                   </tr>
                 </tbody>
               </table>
               <table class="balance">
                 <tr>
-                  <th><span>Total</span></th>
-                  <td><span data-prefix>$</span><span>amt</span></td>
+                  <th><span>Celková cena</span></th>
+                  <td><span>${total_cost}</span><span data-prefix>Kč</span></td>
                 </tr>
                 <tr>
-                  <th><span>Amount Paid</span></th>
-                  <td><span data-prefix>$</span><span>0.00</span></td>
+                  <th><span>Zaplaceno</span></th>
+                  <td><span>0.00</span><span data-prefix>Kč</span></td>
                 </tr>
                 <tr>
-                  <th><span>Balance Due</span></th>
+                  <th><span>Zbývá zaplatit</span></th>
                   <td><span data-prefix>$</span><span>ammount</span></td>
                 </tr>
               </table>

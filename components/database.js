@@ -129,3 +129,31 @@ export const createTableProduct = () => {
     );
   });
 };
+
+export async function getProducts(id) {
+  try {
+    let selectQuery = await ExecuteQuery(
+      'select id,invoice_id,description, price, quantity, dph from product where invoice_id = ?',
+      [id],
+    );
+    let products = [];
+    var rows = selectQuery.rows;
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      let product = {
+        id: item.id,
+        invoice_id: item.invoice_id,
+        description: item.description,
+        price: item.price,
+        quantity: item.quantity,
+        dph: item.dph,
+      };
+      products = [...products, product];
+    }
+
+    //console.log(products);
+    return products;
+  } catch (err) {
+    console.error(err);
+  }
+}
