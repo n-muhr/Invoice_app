@@ -55,7 +55,7 @@ export async function getProfile(id) {
 export async function getClient(id) {
   try {
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, phone, address, description from clients where id = ?',
+      'select id, name, email, address, descriptive_number, city, ico, dic, description from client where id = ?',
       [id],
     );
 
@@ -65,8 +65,11 @@ export async function getClient(id) {
       id: item.id,
       name: item.name,
       email: item.email,
-      phone: item.phone,
+      descriptive_number: item.descriptive_number,
+      city: item.city,
       address: item.address,
+      ico: item.ico,
+      dic: item.dic,
       description: item.description,
     };
     return Client;
@@ -122,13 +125,21 @@ export function deleteProduct(id) {
 }
 
 //vytvoreni table product pokud neexistuje
-export const createTableProduct = () => {
+export function createTableProduct() {
   db.transaction(txn => {
     txn.executeSql(
       'Create table if not exists product(id INTEGER PRIMARY KEY AUTOINCREMENT, invoice_id integer, description TEXT, price decimal(10,5), quantity integer, dph integer)',
     );
   });
-};
+}
+
+export function createTableClient() {
+  db.transaction(txn => {
+    txn.executeSql(
+      'Create table if not exists client(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(10), city VARCHAR(30), ico VARCHAR(15), dic VARCHAR(15), description TEXT)',
+    );
+  });
+}
 
 export async function getProducts(id) {
   try {
@@ -151,7 +162,6 @@ export async function getProducts(id) {
       products = [...products, product];
     }
 
-    //console.log(products);
     return products;
   } catch (err) {
     console.error(err);

@@ -13,8 +13,11 @@ const initialStateClient = {
     id: -1,
     name: '',
     email: '',
-    phone: '',
     address: '',
+    descriptive_number: '',
+    city: '',
+    ico: '',
+    dic: '',
     description: '',
   },
 };

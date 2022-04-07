@@ -12,6 +12,7 @@ import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
 import {setCurrentClient} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
+import {createTableClient} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -29,15 +30,6 @@ export default function ScreenClients({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
-
-  //vytvoreni table clients pokud neexistuje
-  const createTable = () => {
-    db.transaction(txn => {
-      txn.executeSql(
-        'Create table if not exists clients(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), phone VARCHAR(9), address VARCHAR(30), description TEXT)',
-      );
-    });
-  };
 
   //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) =>
@@ -61,7 +53,7 @@ export default function ScreenClients({navigation}) {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, phone, address, description from clients',
+      'select id, name, email, address, descriptive_number, city, ico, dic, description from client',
       [],
     );
 
@@ -73,11 +65,13 @@ export default function ScreenClients({navigation}) {
         id: item.id,
         name: item.name,
         email: item.email,
-        phone: item.phone,
+        descriptive_number: item.descriptive_number,
+        city: item.city,
         address: item.address,
+        ico: item.ico,
+        dic: item.dic,
         description: item.description,
       };
-      //let newProfiles = [...Profiles, Client];
       setProfiles(Profiles => [...Profiles, Client]);
     }
   };
@@ -90,8 +84,8 @@ export default function ScreenClients({navigation}) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    createTableClient();
     if (isFocused) {
-      createTable();
       getClient();
     }
   }, [isFocused]);

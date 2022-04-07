@@ -81,8 +81,11 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
     id: -1,
     name: '',
     email: '',
-    phone: '',
     address: '',
+    descriptive_number: '',
+    city: '',
+    ico: '',
+    dic: '',
     description: '',
   };
   if (item.profile_id !== '') profile = await getProfile(item.profile_id);
@@ -140,8 +143,8 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 <p style="font-size:20px">Odběratel</p>
                 <p>${client.name}</p>
                 <p>${client.address}</p>
-                <p>${profile.descriptive_number}, ${profile.city}</p>
-                <p>IČO: ${profile.ico}</p>
+                <p>${client.descriptive_number}, ${client.city}</p>
+                <p>IČO: ${client.ico}</p>
               </address>
             </header>
             <article>

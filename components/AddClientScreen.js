@@ -26,7 +26,10 @@ export default function AddClientScreen({navigation}) {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [descriptive_number, setDescriptiveNumber] = useState('');
+  const [city, setCity] = useState('');
+  const [ico, setICO] = useState('');
+  const [dic, setDIC] = useState('');
   const [description, setDescription] = useState('');
 
   const {currClient} = useSelector(state => state.clientReducer);
@@ -38,16 +41,35 @@ export default function AddClientScreen({navigation}) {
       if (currClient === undefined) {
         db.transaction(tx => {
           tx.executeSql(
-            'insert into clients(name,email,phone,address,description) values (?,?,?,?,?)',
-            [name, email, phone, address, description],
+            'insert into client(name, email, address, descriptive_number, city, ico, dic, description) values (?,?,?,?,?,?,?,?)',
+            [
+              name,
+              email,
+              address,
+              descriptive_number,
+              city,
+              ico,
+              dic,
+              description,
+            ],
           );
         });
         Alert.alert('Nový klient', 'Byl přidán nový klient.');
       } else {
         db.transaction(tx => {
           tx.executeSql(
-            'update clients set name = ?, email = ?, phone = ?, address = ?, description = ? where id = ?',
-            [name, email, phone, address, description, currClient.id],
+            'update client set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, ico = ?, dic = ?, description = ? where id = ?',
+            [
+              name,
+              email,
+              address,
+              descriptive_number,
+              city,
+              ico,
+              dic,
+              description,
+              currClient.id,
+            ],
           );
         });
         Alert.alert('Edit', 'Údaje byly uloženy.');
@@ -64,8 +86,11 @@ export default function AddClientScreen({navigation}) {
       setName(currClient.name);
       setEmail(currClient.email);
       setAddress(currClient.address);
+      setDescriptiveNumber(currClient.descriptive_number);
+      setCity(currClient.city);
+      setICO(currClient.ico);
+      setDIC(currClient.dic);
       setDescription(currClient.description);
-      setPhone(currClient.phone);
     }
   };
 
@@ -89,16 +114,34 @@ export default function AddClientScreen({navigation}) {
           placeholder="Email"
         />
         <TextInput
-          value={phone}
-          onChangeText={value => setPhone(value)}
-          style={styles.input}
-          placeholder="Phone"
-        />
-        <TextInput
           value={address}
           onChangeText={value => setAddress(value)}
           style={styles.input}
-          placeholder="Adresa"
+          placeholder="Ulice"
+        />
+        <TextInput
+          value={descriptive_number}
+          onChangeText={value => setDescriptiveNumber(value)}
+          style={styles.input}
+          placeholder="Číslo popisné"
+        />
+        <TextInput
+          value={city}
+          onChangeText={value => setCity(value)}
+          style={styles.input}
+          placeholder="Město"
+        />
+        <TextInput
+          value={ico}
+          onChangeText={value => setICO(value)}
+          style={styles.input}
+          placeholder="IČO"
+        />
+        <TextInput
+          value={dic}
+          onChangeText={value => setDIC(value)}
+          style={styles.input}
+          placeholder="DIČ"
         />
         <TextInput
           value={description}
@@ -144,8 +187,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     margin: 10,
-    //position: 'absolute',
-    //bottom: 10
   },
   buttonText: {
     color: '#ffffff',

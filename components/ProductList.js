@@ -89,6 +89,7 @@ export default function ProductList() {
     <View style={styles.body}>
       <FlatList
         data={products}
+        style={{flexGrow: 0, maxHeight: '50%'}}
         renderItem={({item}) => (
           <View style={styles.item}>
             <Text>Popis: {item.description}</Text>
@@ -118,13 +119,13 @@ export default function ProductList() {
           style={styles.input_desc}
           placeholder="Popis produktu"
         />
-        <View style={styles.row}>
+        <View style={styles.rows}>
           <TextInput
             value={price}
             keyboardType="numeric"
             onChangeText={value => setPrice(value)}
             style={styles.input}
-            placeholder="Cena za kus"
+            placeholder="Cena za ks"
           />
           <TextInput
             value={quantity}
@@ -173,9 +174,14 @@ const styles = StyleSheet.create({
     margin: 10,
     bottom: 10,
     position: 'absolute',
+    maxHeight: '80%',
   },
   input_desc: {},
-  input: {},
+  input: {
+    width: '25%',
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
+  },
   button: {
     width: '95%',
     height: 50,
