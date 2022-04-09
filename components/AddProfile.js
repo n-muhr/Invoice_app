@@ -99,6 +99,25 @@ export default function AddProfile({navigation}) {
     }
   };
 
+  const getInfo = () => {
+    if (ico.length > 0) {
+      fetch('http://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=' + ico)
+        .then(response => response.text())
+        .then(textResponse => console.log('response is ', textResponse))
+        .catch(error => {
+          console.log(error);
+        });
+    } else {
+      alert('Chybí IČO', 'Pro vyhledání zadejte IČO');
+    }
+  };
+
+  const displayInformation = data => {
+    //const {name} = data;
+
+    console.log(data);
+  };
+
   useEffect(() => {
     setProfile();
   }, []);
@@ -148,12 +167,23 @@ export default function AddProfile({navigation}) {
             ios_backgroundColor="#3e3e3e"
           />
         </View>
-        <TextInput
-          value={ico}
-          onChangeText={value => setIco(value)}
-          style={styles.input}
-          placeholder="IČO"
-        />
+        <View style={styles.rows}>
+          <TextInput
+            value={ico}
+            onChangeText={value => setIco(value)}
+            style={styles.inputSearch}
+            placeholder="IČO"
+          />
+          <Pressable
+            onPress={getInfo}
+            android_ripple={{color: '#00000050'}}
+            style={({pressed}) => [
+              {backgroundColor: pressed ? '#dddddd' : '#0bf'},
+              styles.buttonSearch,
+            ]}>
+            <Text>Vyhledat</Text>
+          </Pressable>
+        </View>
         <TextInput
           value={dic}
           onChangeText={value => setDic(value)}
@@ -198,12 +228,31 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginBottom: 20,
   },
+  inputSearch: {
+    width: '75%',
+    borderWidth: 1,
+    borderColor: '#555555',
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    textAlign: 'left',
+    fontSize: 20,
+    margin: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    marginBottom: 20,
+  },
   button: {
     width: '95%',
     height: 50,
     alignItems: 'center',
     borderRadius: 5,
     margin: 10,
+  },
+  buttonSearch: {
+    width: '10%',
+    height: '50%',
+    alignItems: 'center',
+    borderRadius: 20,
   },
   buttonText: {
     color: '#ffffff',
