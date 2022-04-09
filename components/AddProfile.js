@@ -101,22 +101,33 @@ export default function AddProfile({navigation}) {
   };
 
   const getInfo = () => {
-    //if (ico.length > 0) {
-    fetch('https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=27074358')
-      .then(response => response.text())
-      .then(textResponse => {
-        const parser = new XMLParser();
-        let obj = parser.parse(textResponse);
-        console.log(obj);
-        const {Ares_odpovedi} = obj;
-        console.log('response is ', Ares_odpovedi);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    /* } else {
+    if (ico.length > 0) {
+      fetch('https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=' + ico)
+        .then(response => response.text())
+        .then(textResponse => {
+          const parser = new XMLParser();
+          let obj = parser.parse(textResponse);
+          const data =
+            obj['are:Ares_odpovedi']?.['are:Odpoved']?.['are:Zaznam'];
+          //console.log(obj);
+          const name = data['are:Obchodni_firma'];
+          const address = data?.['are:Identifikace']?.['are:Adresa_ARES'];
+          const city = address?.['dtt:Nazev_obce'];
+          const street = address?.['dtt:Nazev_ulice'];
+          const numb = address?.['dtt:Cislo_domovni'];
+          const psc = address?.['dtt:PSC'];
+          console.log(city, street, numb);
+          setName(name);
+          setCity(city);
+          setAddress(street + ' ' + numb);
+          setDesNum(String(psc));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } else {
       alert('Chybí IČO', 'Pro vyhledání zadejte IČO');
-    } */
+    }
   };
 
   useEffect(() => {
