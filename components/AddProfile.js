@@ -11,6 +11,7 @@ import {
 import React, {useState, useEffect} from 'react';
 import SQLite from 'react-native-sqlite-storage';
 import {useSelector} from 'react-redux';
+import {XMLParser} from 'fast-xml-parser';
 
 const db = SQLite.openDatabase(
   {
@@ -100,22 +101,22 @@ export default function AddProfile({navigation}) {
   };
 
   const getInfo = () => {
-    if (ico.length > 0) {
-      fetch('http://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=' + ico)
-        .then(response => response.text())
-        .then(textResponse => console.log('response is ', textResponse))
-        .catch(error => {
-          console.log(error);
-        });
-    } else {
+    //if (ico.length > 0) {
+    fetch('https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=27074358')
+      .then(response => response.text())
+      .then(textResponse => {
+        const parser = new XMLParser();
+        let obj = parser.parse(textResponse);
+        console.log(obj);
+        const {Ares_odpovedi} = obj;
+        console.log('response is ', Ares_odpovedi);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    /* } else {
       alert('Chybí IČO', 'Pro vyhledání zadejte IČO');
-    }
-  };
-
-  const displayInformation = data => {
-    //const {name} = data;
-
-    console.log(data);
+    } */
   };
 
   useEffect(() => {
