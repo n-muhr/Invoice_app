@@ -11,6 +11,7 @@ import {useDispatch} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
+import {deleteInvoice} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -96,7 +97,6 @@ export default function ScreenInvoice({navigation}) {
     getInvoice();
     if (isFocused) {
       console.log('focus invoice list');
-      //updateInvoice();
     }
   }, [isFocused]);
 
@@ -134,7 +134,9 @@ export default function ScreenInvoice({navigation}) {
               <TouchableOpacity
                 style={styles.del_button}
                 onPress={() => {
-                  console.log('Del invoice');
+                  console.log('Delete invoice: ', item.id);
+                  deleteInvoice(item.id);
+                  getInvoice();
                 }}>
                 <FontAwesome
                   icon={SolidIcons.trashAlt}

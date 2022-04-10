@@ -124,6 +124,16 @@ export function deleteProduct(id) {
   });
 }
 
+export function deleteInvoice(id) {
+  db.transaction(tx => {
+    tx.executeSql('delete from invoice where id = ?', [id]);
+  });
+
+  db.transaction(tx => {
+    tx.executeSql('delete from product where invoice_id = ?', [id]);
+  });
+}
+
 //vytvoreni table product pokud neexistuje
 export function createTableProduct() {
   db.transaction(txn => {

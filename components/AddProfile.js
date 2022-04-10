@@ -12,6 +12,7 @@ import React, {useState, useEffect} from 'react';
 import SQLite from 'react-native-sqlite-storage';
 import {useSelector} from 'react-redux';
 import {XMLParser} from 'fast-xml-parser';
+import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 
 const db = SQLite.openDatabase(
   {
@@ -109,7 +110,6 @@ export default function AddProfile({navigation}) {
           let obj = parser.parse(textResponse);
           const data =
             obj['are:Ares_odpovedi']?.['are:Odpoved']?.['are:Zaznam'];
-          //console.log(obj);
           const name = data['are:Obchodni_firma'];
           const address = data?.['are:Identifikace']?.['are:Adresa_ARES'];
           const city = address?.['dtt:Nazev_obce'];
@@ -126,7 +126,7 @@ export default function AddProfile({navigation}) {
           console.log(error);
         });
     } else {
-      alert('Chybí IČO', 'Pro vyhledání zadejte IČO');
+      Alert.alert('Chybí IČO', 'Pro vyhledání zadejte IČO');
     }
   };
 
@@ -174,8 +174,8 @@ export default function AddProfile({navigation}) {
             onValueChange={() => {
               setPaysDPH(previousState => !previousState);
             }}
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={pays_dph ? '#f5dd4b' : '#f4f3f4'}
+            trackColor={{false: '#aaa', true: '#3e3e3e'}}
+            thumbColor={pays_dph ? '#4aafff' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
           />
         </View>
@@ -190,10 +190,13 @@ export default function AddProfile({navigation}) {
             onPress={getInfo}
             android_ripple={{color: '#00000050'}}
             style={({pressed}) => [
-              {backgroundColor: pressed ? '#dddddd' : '#0bf'},
+              {backgroundColor: pressed ? '#4aafff' : '#fff'},
               styles.buttonSearch,
             ]}>
-            <Text>Vyhledat</Text>
+            <FontAwesome
+              icon={SolidIcons.search}
+              style={{fontSize: 15, color: 'black'}}
+            />
           </Pressable>
         </View>
         <TextInput
@@ -229,9 +232,9 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '95%',
-    borderWidth: 1,
+    //borderBottomWidth: 1,
     borderColor: '#555555',
-    borderRadius: 10,
+    borderRadius: 25,
     backgroundColor: '#ffffff',
     textAlign: 'left',
     fontSize: 20,
@@ -242,9 +245,9 @@ const styles = StyleSheet.create({
   },
   inputSearch: {
     width: '75%',
-    borderWidth: 1,
+    //borderWidth: 1,
     borderColor: '#555555',
-    borderRadius: 10,
+    borderRadius: 25,
     backgroundColor: '#ffffff',
     textAlign: 'left',
     fontSize: 20,
@@ -261,10 +264,13 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonSearch: {
-    width: '10%',
-    height: '50%',
+    width: 40,
+    height: 40,
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: 40,
+    margin: 10,
+    paddingVertical: 12,
+    marginBottom: 20,
   },
   buttonText: {
     color: '#ffffff',
