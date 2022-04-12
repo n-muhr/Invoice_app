@@ -45,10 +45,11 @@ const initialStateInvoice = {
     date_of_issue: '',
     due_date: '',
     taxable_supply: '',
-    total_cost: '',
+    payed: 0,
     payment_method: '',
     client_id: -1,
     profile_id: -1,
+    note: '',
   },
   invoiceList: [],
 };

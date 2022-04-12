@@ -112,7 +112,10 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
     productTable = productTable + '<td><span>' + total_price + '</span></td>';
     productTable = productTable + '<td><span>' + dph_price + '</span></td>';
     productTable =
-      productTable + '<td><span>' + (total_price + dph_price) + '</span></td>';
+      productTable +
+      '<td><span>' +
+      (total_price + dph_price) +
+      '</span><span data-prefix> Kč</span></td>';
     productTable = productTable + '</tr>';
     total_cost += total_price + dph_price;
   }
@@ -204,15 +207,19 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               <table class="balance">
                 <tr>
                   <th><span>Celková cena</span></th>
-                  <td><span>${total_cost}</span><span data-prefix>Kč</span></td>
+                  <td><span>${total_cost}</span><span data-prefix> Kč</span></td>
                 </tr>
                 <tr>
                   <th><span>Zaplaceno</span></th>
-                  <td><span>0.00</span><span data-prefix>Kč</span></td>
+                  <td><span>${
+                    item.payed
+                  }</span><span data-prefix> Kč</span></td>
                 </tr>
                 <tr>
                   <th><span>Zbývá zaplatit</span></th>
-                  <td><span data-prefix>$</span><span>ammount</span></td>
+                  <td><span>${
+                    total_cost - item.payed
+                  }</span><span data-prefix> Kč</span></td>
                 </tr>
               </table>
             </article>

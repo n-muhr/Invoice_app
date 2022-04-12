@@ -86,7 +86,7 @@ export function deleteClient(id) {
 export async function getLastInvoice() {
   try {
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id from invoice order by id desc limit 1',
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note from invoice order by id desc limit 1',
       [],
     );
     var rows = selectQuery.rows;
@@ -96,10 +96,11 @@ export async function getLastInvoice() {
       date_of_issue: item.date_of_issue,
       due_date: item.due_date,
       taxable_supply: item.taxable_supply,
-      total_cost: item.total_cost,
+      payed: item.payed,
       payment_method: item.payment_method,
       client_id: item.client_id,
       profile_id: item.profile_id,
+      note: item.note,
     };
     //console.log(invoice);
     return invoice;

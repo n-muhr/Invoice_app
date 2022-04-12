@@ -38,7 +38,7 @@ export default function ScreenInvoice({navigation}) {
   const createTable = () => {
     db.transaction(txn => {
       txn.executeSql(
-        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), total_cost decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer)',
+        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), payed decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer, note TEXT)',
       );
     });
   };
@@ -64,7 +64,7 @@ export default function ScreenInvoice({navigation}) {
     setInvoices([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id from invoice',
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note from invoice',
       [],
     );
 
@@ -77,11 +77,12 @@ export default function ScreenInvoice({navigation}) {
         date_of_issue: item.date_of_issue,
         due_date: item.due_date,
         taxable_supply: item.taxable_supply,
-        total_cost: item.total_cost,
+        payed: item.payed,
         payment_method: item.payment_method,
         paid: item.paid,
         client_id: item.client_id,
         profile_id: item.profile_id,
+        note: item.note,
       };
       setInvoices(Invoices => [...Invoices, Invoice]);
       //dispatch(setInvoices(Invoices));

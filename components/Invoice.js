@@ -1,6 +1,7 @@
 import {
   StyleSheet,
   Text,
+  TextInput,
   View,
   Pressable,
   Alert,
@@ -41,7 +42,8 @@ export default function Invoice({navigation}) {
   const [profileName, setProfileName] = useState('');
   const [clientName, setClientName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Hotovost');
-  const [cost, setCost] = useState(0);
+  const [payed, setPayed] = useState('');
+  const [note, setNote] = useState('');
 
   const [isPaid, setIsPaid] = useState(false);
 
@@ -52,6 +54,7 @@ export default function Invoice({navigation}) {
   const [openTaxable, setOpenTaxable] = useState(false);
 
   const [createdDate, setCreatedDate] = useState(new Date());
+  const [openCreated, setOpenCreated] = useState(false);
 
   const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
@@ -81,10 +84,7 @@ export default function Invoice({navigation}) {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.item_body} onPress={itemList}>
-              <View style={styles.rows}>
-                <Text style={styles.text}>Položky</Text>
-                <Text style={styles.text_cost}>Cena: {cost}</Text>
-              </View>
+              <Text style={styles.text}>Položky</Text>
             </TouchableOpacity>
             <View style={styles.item_body}>
               <View style={styles.rows}>
@@ -99,7 +99,47 @@ export default function Invoice({navigation}) {
                   ios_backgroundColor="#3e3e3e"
                 />
               </View>
+              <View style={styles.rows}>
+                <Text style={styles.text}>Zaplaceno: </Text>
+                <TextInput
+                  value={payed}
+                  keyboardType="numeric"
+                  onChangeText={value => setPayed(value)}
+                  style={styles.input}
+                  placeholder=""
+                />
+              </View>
             </View>
+            <TouchableOpacity
+              style={styles.item_body}
+              onPress={() => setOpenCreated(true)}>
+              <View>
+                <Text style={styles.text}>
+                  Datum vytvoření: {createdDate.toString().split(' ')[2]}
+                  {'.'}
+                  {getMonth(createdDate.toString().split(' ')[1])}
+                  {'.'}
+                  {createdDate.toString().split(' ')[3]}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <DatePicker
+              modal
+              open={openCreated}
+              date={createdDate}
+              mode="date"
+              locale="cs"
+              title="Vyberte čas"
+              confirmText="Potvrdit"
+              cancelText="Zrušit"
+              onConfirm={createdDate => {
+                setOpenCreated(false);
+                setCreatedDate(createdDate);
+              }}
+              onCancel={() => {
+                setOpenCreated(false);
+              }}
+            />
             <TouchableOpacity
               style={styles.item_body}
               onPress={() => setOpen(true)}>
@@ -206,32 +246,34 @@ export default function Invoice({navigation}) {
     if (currInvoice === undefined) {
       db.transaction(tx => {
         tx.executeSql(
-          'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id) values(?,?,?,?,?,?,?,?)',
+          'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note) values(?,?,?,?,?,?,?,?,?)',
           [
-            time_now.toDateString(),
+            createdDate.toDateString(),
             dueDate.toDateString(),
             taxableDate.toDateString(),
-            cost,
+            payed,
             paymentMethod,
             isPaid,
             client,
             profile,
+            note,
           ],
         );
       });
     } else {
       db.transaction(tx => {
         tx.executeSql(
-          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, total_cost = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?',
+          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, payed = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?, note = ?',
           [
-            time_now.toDateString(),
+            createdDate.toDateString(),
             dueDate.toDateString(),
             taxableDate.toDateString(),
-            cost,
+            payed,
             paymentMethod,
             isPaid,
             client,
             profile,
+            note,
           ],
         );
       });
@@ -242,11 +284,12 @@ export default function Invoice({navigation}) {
       date_of_issue: currInvoice.date_of_issue,
       due_date: dueDate,
       taxable_supply: taxableDate,
-      total_cost: cost,
+      payed: payed,
       payment_method: paymentMethod,
       paid: isPaid,
       client_id: client,
       profile_id: profile,
+      note: note,
     };
 
     dispatch(setCurrentInvoce(invoice));
@@ -286,24 +329,26 @@ export default function Invoice({navigation}) {
       }
 
       setClient(currInvoice.client_id);
-      setCost(currInvoice.total_cost);
+      setPayed(currInvoice.payed);
       setPaymentMethod(currInvoice.payment_method);
       setIsPaid(currInvoice.paid);
+      setNote(currInvoice.note);
       setDueDate(new Date(currInvoice.due_date));
       setTaxableDate(new Date(currInvoice.taxable_supply));
       setCreatedDate(new Date(currInvoice.date_of_issue));
     } else {
       await ExecuteQuery(
-        'insert into invoice(date_of_issue, due_date, taxable_supply, total_cost, payment_method, paid, client_id, profile_id) values(?,?,?,?,?,?,?,?)',
+        'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note) values(?,?,?,?,?,?,?,?,?)',
         [
-          dueDate.toDateString(),
+          createdDate.toDateString(),
           dueDate.toDateString(),
           taxableDate.toDateString(),
-          cost,
+          payed,
           paymentMethod,
           isPaid,
           client,
           profile,
+          note,
         ],
       );
 
@@ -443,5 +488,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     bottom: 0,
+  },
+  input: {
+    width: '40%',
+    marginHorizontal: 15,
+    borderBottomWidth: 1,
   },
 });
