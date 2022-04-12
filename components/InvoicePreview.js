@@ -5,6 +5,7 @@ import {useSelector} from 'react-redux';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {pdfContent} from './PDFContent';
 import {useIsFocused} from '@react-navigation/native';
+import RNPrint from 'react-native-print';
 
 export default function InvoicePreview() {
   const {currInvoice} = useSelector(state => state.invoiceReducer);
@@ -59,16 +60,28 @@ export default function InvoicePreview() {
         style={styles.pdf}
       />
       <Pressable
-        onPress={() => {
-          createPDF();
-          //console.log(PDFPath);
+        onPress={async () => {
+          console.log(source);
+          await RNPrint.print({filePath: source.uri});
         }}
         android_ripple={{color: '#00000050'}}
         style={({pressed}) => [
-          {backgroundColor: pressed ? '#dddddd' : '#0b0'},
+          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
           styles.button,
         ]}>
-        <Text style={styles.buttonText}>Poslat na email</Text>
+        <Text style={styles.buttonText}>Tisk</Text>
+      </Pressable>
+      <Pressable
+        onPress={async () => {
+          console.log(source);
+          await RNPrint.print({filePath: source.uri});
+        }}
+        android_ripple={{color: '#00000050'}}
+        style={({pressed}) => [
+          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
+          styles.button,
+        ]}>
+        <Text style={styles.buttonText}>Poslat email</Text>
       </Pressable>
     </View>
   );
