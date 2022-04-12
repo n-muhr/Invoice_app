@@ -6,6 +6,7 @@ import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {pdfContent} from './PDFContent';
 import {useIsFocused} from '@react-navigation/native';
 import RNPrint from 'react-native-print';
+import Mailer from 'react-native-mail';
 
 export default function InvoicePreview() {
   const {currInvoice} = useSelector(state => state.invoiceReducer);
@@ -33,7 +34,42 @@ export default function InvoicePreview() {
 
     let file = await RNHTMLtoPDF.convert(options);
     setPDFPath(item => (item = file.filePath));
-    //console.log(PDFPath);
+    console.log(PDFPath);
+  };
+
+  const handleEmail = () => {
+    Mailer.mail(
+      {
+        subject: 'Send help',
+        recipients: ['support@example.com'],
+        ccRecipients: [],
+        bccRecipients: [],
+        body: '',
+        isHTML: true,
+        attachment: {
+          path: PDFPath, // The absolute path of the file from which to read data.
+          type: 'pdf', // Mime Type: jpg, png, doc, ppt, html, pdf, csv
+          name: 'Faktura', // Optional: Custom filename for attachment
+        },
+      },
+      (error, event) => {
+        Alert.alert(
+          error,
+          event,
+          [
+            {
+              text: 'Ok',
+              onPress: () => console.log('OK: Email Error Response'),
+            },
+            {
+              text: 'Cancel',
+              onPress: () => console.log('CANCEL: Email Error Response'),
+            },
+          ],
+          {cancelable: true},
+        );
+      },
+    );
   };
 
   const isFocused = useIsFocused();
@@ -59,30 +95,32 @@ export default function InvoicePreview() {
         }}
         style={styles.pdf}
       />
-      <Pressable
-        onPress={async () => {
-          console.log(source);
-          await RNPrint.print({filePath: source.uri});
-        }}
-        android_ripple={{color: '#00000050'}}
-        style={({pressed}) => [
-          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
-          styles.button,
-        ]}>
-        <Text style={styles.buttonText}>Tisk</Text>
-      </Pressable>
-      <Pressable
-        onPress={async () => {
-          console.log(source);
-          await RNPrint.print({filePath: source.uri});
-        }}
-        android_ripple={{color: '#00000050'}}
-        style={({pressed}) => [
-          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
-          styles.button,
-        ]}>
-        <Text style={styles.buttonText}>Poslat email</Text>
-      </Pressable>
+      <View style={styles.rows}>
+        <Pressable
+          onPress={async () => {
+            console.log(source);
+            await RNPrint.print({filePath: PDFPath});
+          }}
+          android_ripple={{color: '#00000050'}}
+          style={({pressed}) => [
+            {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
+            styles.button,
+          ]}>
+          <Text style={styles.buttonText}>Tisk</Text>
+        </Pressable>
+        <Pressable
+          onPress={async () => {
+            console.log(source);
+            handleEmail();
+          }}
+          android_ripple={{color: '#00000050'}}
+          style={({pressed}) => [
+            {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
+            styles.button,
+          ]}>
+          <Text style={styles.buttonText}>Poslat email</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -100,12 +138,11 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height,
   },
   button: {
-    width: '95%',
+    width: '45%',
     height: 50,
     alignItems: 'center',
     borderRadius: 5,
     margin: 10,
-    position: 'absolute',
     bottom: 0,
   },
   buttonText: {
@@ -113,5 +150,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     margin: 10,
     textAlign: 'center',
+  },
+  rows: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
