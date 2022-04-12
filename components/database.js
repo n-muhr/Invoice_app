@@ -77,6 +77,11 @@ export async function getClient(id) {
     console.error(err);
   }
 }
+export function deleteClient(id) {
+  db.transaction(tx => {
+    tx.executeSql('delete from client where id = ?', [id]);
+  });
+}
 
 export async function getLastInvoice() {
   try {

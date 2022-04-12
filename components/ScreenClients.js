@@ -12,7 +12,7 @@ import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
 import {setCurrentClient} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
-import {createTableClient} from './database';
+import {createTableClient, deleteClient} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -78,7 +78,7 @@ export default function ScreenClients({navigation}) {
 
   //smazani klienta z databaze podle id
   const delClient = async id => {
-    await ExecuteQuery('delete from clients where id = ?', [id]);
+    deleteClient(id);
   };
 
   const isFocused = useIsFocused();

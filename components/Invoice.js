@@ -18,7 +18,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import InvoicePreview from './InvoicePreview';
 import {useDispatch} from 'react-redux';
 import {setCurrentInvoce} from '../src/redux/actions';
-import {getLastInvoice, ExecuteQuery} from './database';
+import {getLastInvoice, ExecuteQuery, getProfile, getClient} from './database';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -38,6 +38,8 @@ const methods = ['Hotovost', 'Platba kartou', 'Bankovní převod'];
 export default function Invoice({navigation}) {
   const [profile, setProfile] = useState('');
   const [client, setClient] = useState('');
+  const [profileName, setProfileName] = useState('');
+  const [clientName, setClientName] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Hotovost');
   const [cost, setCost] = useState(0);
 
@@ -67,14 +69,14 @@ export default function Invoice({navigation}) {
             <TouchableOpacity style={styles.item_body} onPress={profilList}>
               <View style={styles.rows}>
                 <Text style={styles.text}>Dodavatel: </Text>
-                <Text style={styles.text}>{profile}</Text>
+                <Text style={styles.text}>{profileName}</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.item_body} onPress={clientList}>
               <View style={styles.rows}>
                 <Text style={styles.text}>Odběratel: </Text>
-                <Text style={styles.text}>{client}</Text>
+                <Text style={styles.text}>{clientName}</Text>
               </View>
             </TouchableOpacity>
 
@@ -271,7 +273,18 @@ export default function Invoice({navigation}) {
 
   const setInvoice = async () => {
     if (currInvoice !== undefined) {
+      if (currInvoice.profile_id !== '') {
+        let profile = await getProfile(currInvoice.profile_id);
+        setProfileName(profile.name);
+      }
+
       setProfile(currInvoice.profile_id);
+
+      if (currInvoice.client_id !== '') {
+        let client = await getClient(currInvoice.client_id);
+        setClientName(client.name);
+      }
+
       setClient(currInvoice.client_id);
       setCost(currInvoice.total_cost);
       setPaymentMethod(currInvoice.payment_method);
@@ -304,12 +317,16 @@ export default function Invoice({navigation}) {
     if (invoiceClient !== undefined) {
       console.log(invoiceClient);
       setClient(invoiceClient);
-    } else console.log('Client not defined');
+      let client = await getClient(invoiceClient);
+      setClientName(client.name);
+    }
 
     if (invoiceProfile !== undefined) {
       console.log(invoiceProfile);
       setProfile(invoiceProfile);
-    } else console.log('Profile not defined');
+      let profile = await getProfile(invoiceProfile);
+      setProfileName(profile.name);
+    }
   };
 
   const getMonth = str => {

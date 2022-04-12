@@ -41,7 +41,7 @@ export default function InvoicePreview() {
     Mailer.mail(
       {
         subject: 'Send help',
-        recipients: ['support@example.com'],
+        recipients: [''],
         ccRecipients: [],
         bccRecipients: [],
         body: '',
