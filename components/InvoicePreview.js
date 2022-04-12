@@ -47,9 +47,10 @@ export default function InvoicePreview() {
         body: '',
         isHTML: true,
         attachment: {
-          path: PDFPath, // The absolute path of the file from which to read data.
-          type: 'pdf', // Mime Type: jpg, png, doc, ppt, html, pdf, csv
-          name: 'Faktura', // Optional: Custom filename for attachment
+          //path: '/storage/emulated/0/Download/test1.pdf',
+          uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test1.pdf',
+          type: 'pdf',
+          name: 'Faktura',
         },
       },
       (error, event) => {
