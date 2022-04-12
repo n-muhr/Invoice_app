@@ -48,7 +48,7 @@ export default function InvoicePreview() {
         isHTML: true,
         attachment: {
           //path: '/storage/emulated/0/Download/test1.pdf',
-          uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test1.pdf',
+          uri: 'file:///storage/emulated/0/Download//test1.pdf',
           type: 'pdf',
           name: 'Faktura',
         },
