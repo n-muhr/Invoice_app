@@ -127,7 +127,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
         <html>
           <head>
             <meta charset="utf-8">
-            <title>Invoice</title>
+            <title>Faktura</title>
             <link rel="license" href="https://www.opensource.org/licenses/mit-license/">
             <style>
               ${htmlStyles}

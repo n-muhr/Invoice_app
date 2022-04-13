@@ -36,6 +36,10 @@ export default function AddProfile({navigation}) {
   const [dic, setDic] = useState('');
   const [description, setDescription] = useState('');
 
+  const [section, setSection] = useState('');
+  const [part, setPart] = useState('');
+  const [court, setCourt] = useState('');
+
   const {currProfile} = useSelector(state => state.profileReducer);
 
   const verifyAdd = () => {
@@ -114,6 +118,12 @@ export default function AddProfile({navigation}) {
           const city = data['D:AA']?.['D:N'];
           const street = data['D:AD']?.['D:UC'];
           const psc = data['D:AA']?.['D:PSC'];
+          let court = data['D:ROR']?.['D:SZ']?.['D:SD']?.['D:T'];
+          const section = data['D:ROR']?.['D:SZ']?.['D:OV'];
+
+          if (court === undefined) {
+            court = data['D:RRZ']?.['D:ZU']?.['D:NZU'];
+          }
 
           if (dic !== undefined) {
             setDic(dic);
@@ -127,6 +137,9 @@ export default function AddProfile({navigation}) {
           setCity(city);
           setAddress(street);
           setDesNum(String(psc));
+          if (court !== undefined) setCourt(court);
+          if (section !== undefined) setSection(section.charAt(0));
+          if (section !== undefined) setPart(section.substring(2));
         })
         .catch(error => {
           console.log(error);
@@ -210,6 +223,24 @@ export default function AddProfile({navigation}) {
           onChangeText={value => setDic(value)}
           style={styles.input}
           placeholder="DIČ"
+        />
+        <TextInput
+          value={court}
+          onChangeText={value => setCourt(value)}
+          style={styles.input}
+          placeholder="Zapsán u soudu"
+        />
+        <TextInput
+          value={section}
+          onChangeText={value => setSection(value)}
+          style={styles.input}
+          placeholder="Oddíl"
+        />
+        <TextInput
+          value={part}
+          onChangeText={value => setPart(value)}
+          style={styles.input}
+          placeholder="Složka"
         />
         <TextInput
           value={description}
