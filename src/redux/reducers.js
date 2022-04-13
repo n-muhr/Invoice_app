@@ -47,6 +47,7 @@ const initialStateInvoice = {
     taxable_supply: '',
     payed: 0,
     payment_method: '',
+    paid: false,
     client_id: -1,
     profile_id: -1,
     note: '',

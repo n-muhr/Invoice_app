@@ -15,11 +15,11 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import SelectDropdown from 'react-native-select-dropdown';
 import InvoicePreview from './InvoicePreview';
 import {useDispatch} from 'react-redux';
 import {setCurrentInvoce} from '../src/redux/actions';
 import {getLastInvoice, ExecuteQuery, getProfile, getClient} from './database';
+import {Picker} from '@react-native-picker/picker';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -55,6 +55,8 @@ export default function Invoice({navigation}) {
 
   const [createdDate, setCreatedDate] = useState(new Date());
   const [openCreated, setOpenCreated] = useState(false);
+
+  const [selectedValue, setSelectedValue] = useState('Hotovost');
 
   const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
@@ -99,16 +101,18 @@ export default function Invoice({navigation}) {
                   ios_backgroundColor="#3e3e3e"
                 />
               </View>
-              <View style={styles.rows}>
-                <Text style={styles.text}>Zaplaceno: </Text>
-                <TextInput
-                  value={payed}
-                  keyboardType="numeric"
-                  onChangeText={value => setPayed(value)}
-                  style={styles.input}
-                  placeholder=""
-                />
-              </View>
+              {isPaid ? null : (
+                <View style={styles.rows}>
+                  <Text style={styles.text}>Zaplaceno: </Text>
+                  <TextInput
+                    value={payed}
+                    keyboardType="numeric"
+                    onChangeText={value => setPayed(value)}
+                    style={styles.input}
+                    placeholder="Kč"
+                  />
+                </View>
+              )}
             </View>
             <TouchableOpacity
               style={styles.item_body}
@@ -200,20 +204,18 @@ export default function Invoice({navigation}) {
                 setOpenTaxable(false);
               }}
             />
-            <SelectDropdown
-              data={methods}
-              onSelect={(selectedItem, index) => {
-                console.log(selectedItem, index);
-                setPaymentMethod(selectedItem);
-              }}
-              defaultValue={paymentMethod}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                return selectedItem;
-              }}
-              rowTextForSelection={(item, index) => {
-                return item;
-              }}
-            />
+            <View style={styles.item_body}>
+              <Picker
+                selectedValue={paymentMethod}
+                style={{height: 50, width: '60%'}}
+                onValueChange={(itemValue, itemIndex) =>
+                  setPaymentMethod(itemValue)
+                }>
+                <Picker.Item label="Hotovost" value="Hotovost" />
+                <Picker.Item label="Platba Kartou" value="Platba Kartou" />
+                <Picker.Item label="Bankovní převod" value="Bankovní převod" />
+              </Picker>
+            </View>
           </View>
         </ScrollView>
 
@@ -263,7 +265,7 @@ export default function Invoice({navigation}) {
     } else {
       db.transaction(tx => {
         tx.executeSql(
-          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, payed = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?, note = ?',
+          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, payed = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?, note = ? where id = ?',
           [
             createdDate.toDateString(),
             dueDate.toDateString(),
@@ -274,6 +276,7 @@ export default function Invoice({navigation}) {
             client,
             profile,
             note,
+            currInvoice.id,
           ],
         );
       });
@@ -329,7 +332,7 @@ export default function Invoice({navigation}) {
       }
 
       setClient(currInvoice.client_id);
-      setPayed(currInvoice.payed);
+      setPayed(currInvoice.payed.toString());
       setPaymentMethod(currInvoice.payment_method);
       setIsPaid(currInvoice.paid);
       setNote(currInvoice.note);
@@ -354,9 +357,7 @@ export default function Invoice({navigation}) {
 
       let invoice = await getLastInvoice();
       console.log('New Invoice');
-      //console.log(invoice);
       dispatch(setCurrentInvoce(invoice));
-      //console.log(currInvoice);
     }
 
     if (invoiceClient !== undefined) {

@@ -119,6 +119,9 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
     productTable = productTable + '</tr>';
     total_cost += total_price + dph_price;
   }
+  let payed = 0;
+  if (item.paid) payed = total_cost;
+  else payed = item.payed;
 
   const htmlContent = `
         <html>
@@ -211,14 +214,12 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 </tr>
                 <tr>
                   <th><span>Zaplaceno</span></th>
-                  <td><span>${
-                    item.payed
-                  }</span><span data-prefix> Kč</span></td>
+                  <td><span>${payed}</span><span data-prefix> Kč</span></td>
                 </tr>
                 <tr>
                   <th><span>Zbývá zaplatit</span></th>
                   <td><span>${
-                    total_cost - item.payed
+                    total_cost - payed
                   }</span><span data-prefix> Kč</span></td>
                 </tr>
               </table>

@@ -98,6 +98,7 @@ export async function getLastInvoice() {
       taxable_supply: item.taxable_supply,
       payed: item.payed,
       payment_method: item.payment_method,
+      paid: item.paid,
       client_id: item.client_id,
       profile_id: item.profile_id,
       note: item.note,
