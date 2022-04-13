@@ -2,16 +2,12 @@ import {StyleSheet, Text, View, Dimensions, Pressable} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Pdf from 'react-native-pdf';
 import {useSelector} from 'react-redux';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import {pdfContent} from './PDFContent';
-import {useIsFocused} from '@react-navigation/native';
 import RNPrint from 'react-native-print';
 import Mailer from 'react-native-mail';
 
 export default function InvoicePreview() {
   const {currInvoice} = useSelector(state => state.invoiceReducer);
 
-  const [PDFPath, setPDFPath] = useState('');
   let source = {uri: ''};
   currInvoice !== undefined
     ? (source = {
@@ -19,23 +15,14 @@ export default function InvoicePreview() {
           'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test' +
           currInvoice.id +
           '.pdf',
+        filePath:
+          '/storage/emulated/0/Android/data/com.invoiceapp/files/Download/test' +
+          currInvoice.id +
+          '.pdf',
       })
     : (source = {
-        uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test1.pdf',
+        uri: '',
       });
-
-  const createPDF = async id => {
-    let name = 'test' + currInvoice.id;
-    let options = {
-      html: await pdfContent(currInvoice),
-      fileName: name,
-      directory: 'Download',
-    };
-
-    let file = await RNHTMLtoPDF.convert(options);
-    setPDFPath(item => (item = file.filePath));
-    console.log(PDFPath);
-  };
 
   const handleEmail = () => {
     Mailer.mail(
@@ -73,14 +60,6 @@ export default function InvoicePreview() {
     );
   };
 
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    if (isFocused) {
-      createPDF();
-    }
-  }, [PDFPath, isFocused]);
-
   return (
     <View style={styles.container}>
       <Pdf
@@ -100,7 +79,7 @@ export default function InvoicePreview() {
         <Pressable
           onPress={async () => {
             console.log(source);
-            await RNPrint.print({filePath: PDFPath});
+            await RNPrint.print({filePath: source.filePath});
           }}
           android_ripple={{color: '#00000050'}}
           style={({pressed}) => [

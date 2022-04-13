@@ -225,9 +225,12 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               </table>
             </article>
             <aside>
-              <h1><span>Additional Notes</span></h1>
+              <h1><span>Poznámka</span></h1>
               <div>
-                <p>A finance charge of 1.5% will be made on unpaid balances after 30 days.</p>
+                <p>${item.note}</p>
+              </div>
+              <div>
+                <p>Sídlo soud blabla</p>
               </div>
             </aside>
           </body>

@@ -125,16 +125,6 @@ export default function ScreenInvoice({navigation}) {
               <TouchableOpacity
                 style={styles.del_button}
                 onPress={() => {
-                  console.log('create invoice');
-                }}>
-                <FontAwesome
-                  icon={SolidIcons.inbox}
-                  style={{fontSize: 20, color: 'blue'}}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.del_button}
-                onPress={() => {
                   console.log('Delete invoice: ', item.id);
                   deleteInvoice(item.id);
                   getInvoice();

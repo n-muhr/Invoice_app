@@ -4,7 +4,6 @@ import {
   TextInput,
   View,
   Pressable,
-  Alert,
   ScrollView,
   TouchableOpacity,
   Switch,
@@ -15,11 +14,12 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import InvoicePreview from './InvoicePreview';
 import {useDispatch} from 'react-redux';
 import {setCurrentInvoce} from '../src/redux/actions';
 import {getLastInvoice, ExecuteQuery, getProfile, getClient} from './database';
 import {Picker} from '@react-native-picker/picker';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import {pdfContent} from './PDFContent';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -33,8 +33,6 @@ const db = SQLite.openDatabase(
     console.log(error);
   },
 );
-
-const methods = ['Hotovost', 'Platba kartou', 'Bankovní převod'];
 
 export default function Invoice({navigation}) {
   const [profile, setProfile] = useState('');
@@ -56,8 +54,6 @@ export default function Invoice({navigation}) {
   const [createdDate, setCreatedDate] = useState(new Date());
   const [openCreated, setOpenCreated] = useState(false);
 
-  const [selectedValue, setSelectedValue] = useState('Hotovost');
-
   const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
     state => state.invoiceReducer,
   );
@@ -65,182 +61,6 @@ export default function Invoice({navigation}) {
   const isFocused = useIsFocused();
 
   const dispatch = useDispatch();
-
-  const InvoiceDetail = () => {
-    return (
-      <View style={styles.body}>
-        <ScrollView style={styles.body}>
-          <View style={styles.body}>
-            <TouchableOpacity style={styles.item_body} onPress={profilList}>
-              <View style={styles.rows}>
-                <Text style={styles.text}>Dodavatel: </Text>
-                <Text style={styles.text}>{profileName}</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.item_body} onPress={clientList}>
-              <View style={styles.rows}>
-                <Text style={styles.text}>Odběratel: </Text>
-                <Text style={styles.text}>{clientName}</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.item_body} onPress={itemList}>
-              <Text style={styles.text}>Položky</Text>
-            </TouchableOpacity>
-            <View style={styles.item_body}>
-              <View style={styles.rows}>
-                <Text style={styles.text}>Je zaplacená</Text>
-                <Switch
-                  value={isPaid}
-                  onValueChange={() => {
-                    setIsPaid(previousState => !previousState);
-                  }}
-                  trackColor={{false: '#767577', true: '#81b0ff'}}
-                  thumbColor={isPaid ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                />
-              </View>
-              {isPaid ? null : (
-                <View style={styles.rows}>
-                  <Text style={styles.text}>Zaplaceno: </Text>
-                  <TextInput
-                    value={payed}
-                    keyboardType="numeric"
-                    onChangeText={value => setPayed(value)}
-                    style={styles.input}
-                    placeholder="Kč"
-                  />
-                </View>
-              )}
-            </View>
-            <TouchableOpacity
-              style={styles.item_body}
-              onPress={() => setOpenCreated(true)}>
-              <View>
-                <Text style={styles.text}>
-                  Datum vytvoření: {createdDate.toString().split(' ')[2]}
-                  {'.'}
-                  {getMonth(createdDate.toString().split(' ')[1])}
-                  {'.'}
-                  {createdDate.toString().split(' ')[3]}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <DatePicker
-              modal
-              open={openCreated}
-              date={createdDate}
-              mode="date"
-              locale="cs"
-              title="Vyberte čas"
-              confirmText="Potvrdit"
-              cancelText="Zrušit"
-              onConfirm={createdDate => {
-                setOpenCreated(false);
-                setCreatedDate(createdDate);
-              }}
-              onCancel={() => {
-                setOpenCreated(false);
-              }}
-            />
-            <TouchableOpacity
-              style={styles.item_body}
-              onPress={() => setOpen(true)}>
-              <View>
-                <Text style={styles.text}>
-                  Datum splatnosti: {dueDate.toString().split(' ')[2]}
-                  {'.'}
-                  {getMonth(dueDate.toString().split(' ')[1])}
-                  {'.'}
-                  {dueDate.toString().split(' ')[3]}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <DatePicker
-              modal
-              open={open}
-              date={dueDate}
-              mode="date"
-              locale="cs"
-              title="Vyberte čas"
-              confirmText="Potvrdit"
-              cancelText="Zrušit"
-              onConfirm={dueDate => {
-                setOpen(false);
-                setDueDate(dueDate);
-              }}
-              onCancel={() => {
-                setOpen(false);
-              }}
-            />
-            <TouchableOpacity
-              style={styles.item_body}
-              onPress={() => setOpenTaxable(true)}>
-              <View>
-                <Text style={styles.text}>
-                  Zdanitelné splnění: {taxableDate.toString().split(' ')[2]}
-                  {'.'}
-                  {getMonth(taxableDate.toString().split(' ')[1])}
-                  {'.'}
-                  {taxableDate.toString().split(' ')[3]}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <DatePicker
-              modal
-              open={openTaxable}
-              date={taxableDate}
-              locale="cs"
-              title="Vyberte čas"
-              confirmText="Potvrdit"
-              cancelText="Zrušit"
-              mode="date"
-              onConfirm={taxableDate => {
-                setOpenTaxable(false);
-                setTaxableDate(taxableDate);
-              }}
-              onCancel={() => {
-                setOpenTaxable(false);
-              }}
-            />
-            <View style={styles.item_body}>
-              <Picker
-                selectedValue={paymentMethod}
-                style={{height: 50, width: '60%'}}
-                onValueChange={(itemValue, itemIndex) =>
-                  setPaymentMethod(itemValue)
-                }>
-                <Picker.Item label="Hotovost" value="Hotovost" />
-                <Picker.Item label="Platba Kartou" value="Platba Kartou" />
-                <Picker.Item label="Bankovní převod" value="Bankovní převod" />
-              </Picker>
-            </View>
-          </View>
-        </ScrollView>
-
-        <Pressable
-          onPress={deleteInvoice}
-          android_ripple={{color: '#00000050'}}
-          style={({pressed}) => [
-            {backgroundColor: pressed ? '#dddddd' : '#b00'},
-            styles.button_delete,
-          ]}>
-          <Text style={styles.buttonText}>Smazat</Text>
-        </Pressable>
-
-        <Pressable
-          onPress={saveInvoice}
-          android_ripple={{color: '#00000050'}}
-          style={({pressed}) => [
-            {backgroundColor: pressed ? '#dddddd' : '#0b0'},
-            styles.button,
-          ]}>
-          <Text style={styles.buttonText}>Uložit</Text>
-        </Pressable>
-      </View>
-    );
-  };
 
   const saveInvoice = () => {
     let time_now = new Date();
@@ -297,7 +117,6 @@ export default function Invoice({navigation}) {
 
     dispatch(setCurrentInvoce(invoice));
     console.log('Save');
-    //navigation.goBack();
   };
 
   const deleteInvoice = () => {
@@ -315,6 +134,17 @@ export default function Invoice({navigation}) {
 
   const itemList = () => {
     navigation.navigate('Položky');
+  };
+
+  const createPDF = async () => {
+    let name = 'test' + currInvoice.id;
+    let options = {
+      html: await pdfContent(currInvoice),
+      fileName: name,
+      directory: 'Download',
+    };
+
+    let file = await RNHTMLtoPDF.convert(options);
   };
 
   const setInvoice = async () => {
@@ -428,15 +258,187 @@ export default function Invoice({navigation}) {
   }, [isFocused]);
 
   return (
-    <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarOptions: {
-          labelStyle: {fontSize: 16, fontWeight: 'bold'},
-        },
-      })}>
-      <Tab.Screen name="Detaily" component={InvoiceDetail} />
-      <Tab.Screen name="Náhled" component={InvoicePreview} />
-    </Tab.Navigator>
+    <View style={styles.body}>
+      <ScrollView style={styles.body}>
+        <View style={styles.body}>
+          <TouchableOpacity style={styles.item_body} onPress={profilList}>
+            <View style={styles.rows}>
+              <Text style={styles.text}>Dodavatel: </Text>
+              <Text style={styles.text}>{profileName}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.item_body} onPress={clientList}>
+            <View style={styles.rows}>
+              <Text style={styles.text}>Odběratel: </Text>
+              <Text style={styles.text}>{clientName}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.item_body} onPress={itemList}>
+            <Text style={styles.text}>Položky</Text>
+          </TouchableOpacity>
+          <View style={styles.item_body}>
+            <View style={styles.rows}>
+              <Text style={styles.text}>Je zaplacená</Text>
+              <Switch
+                value={isPaid}
+                onValueChange={() => {
+                  setIsPaid(previousState => !previousState);
+                }}
+                trackColor={{false: '#767577', true: '#81b0ff'}}
+                thumbColor={isPaid ? '#f5dd4b' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+              />
+            </View>
+            {isPaid ? null : (
+              <View style={styles.rows}>
+                <Text style={styles.text}>Zaplaceno: </Text>
+                <TextInput
+                  value={payed}
+                  keyboardType="numeric"
+                  onChangeText={value => setPayed(value)}
+                  style={styles.input}
+                  placeholder="Kč"
+                />
+              </View>
+            )}
+            <TextInput
+              value={note}
+              onChangeText={value => setNote(value)}
+              style={styles.input_note}
+              placeholder="Poznámka"
+              multiline
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.item_body}
+            onPress={() => setOpenCreated(true)}>
+            <View>
+              <Text style={styles.text}>
+                Datum vytvoření: {createdDate.toString().split(' ')[2]}
+                {'.'}
+                {getMonth(createdDate.toString().split(' ')[1])}
+                {'.'}
+                {createdDate.toString().split(' ')[3]}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <DatePicker
+            modal
+            open={openCreated}
+            date={createdDate}
+            mode="date"
+            locale="cs"
+            title="Vyberte čas"
+            confirmText="Potvrdit"
+            cancelText="Zrušit"
+            onConfirm={createdDate => {
+              setOpenCreated(false);
+              setCreatedDate(createdDate);
+            }}
+            onCancel={() => {
+              setOpenCreated(false);
+            }}
+          />
+          <TouchableOpacity
+            style={styles.item_body}
+            onPress={() => setOpen(true)}>
+            <View>
+              <Text style={styles.text}>
+                Datum splatnosti: {dueDate.toString().split(' ')[2]}
+                {'.'}
+                {getMonth(dueDate.toString().split(' ')[1])}
+                {'.'}
+                {dueDate.toString().split(' ')[3]}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <DatePicker
+            modal
+            open={open}
+            date={dueDate}
+            mode="date"
+            locale="cs"
+            title="Vyberte čas"
+            confirmText="Potvrdit"
+            cancelText="Zrušit"
+            onConfirm={dueDate => {
+              setOpen(false);
+              setDueDate(dueDate);
+            }}
+            onCancel={() => {
+              setOpen(false);
+            }}
+          />
+          <TouchableOpacity
+            style={styles.item_body}
+            onPress={() => setOpenTaxable(true)}>
+            <View>
+              <Text style={styles.text}>
+                Zdanitelné splnění: {taxableDate.toString().split(' ')[2]}
+                {'.'}
+                {getMonth(taxableDate.toString().split(' ')[1])}
+                {'.'}
+                {taxableDate.toString().split(' ')[3]}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <DatePicker
+            modal
+            open={openTaxable}
+            date={taxableDate}
+            locale="cs"
+            title="Vyberte čas"
+            confirmText="Potvrdit"
+            cancelText="Zrušit"
+            mode="date"
+            onConfirm={taxableDate => {
+              setOpenTaxable(false);
+              setTaxableDate(taxableDate);
+            }}
+            onCancel={() => {
+              setOpenTaxable(false);
+            }}
+          />
+          <View style={styles.item_body}>
+            <Picker
+              selectedValue={paymentMethod}
+              style={{height: 50, width: '60%'}}
+              onValueChange={(itemValue, itemIndex) =>
+                setPaymentMethod(itemValue)
+              }>
+              <Picker.Item label="Hotovost" value="Hotovost" />
+              <Picker.Item label="Platba Kartou" value="Platba Kartou" />
+              <Picker.Item label="Bankovní převod" value="Bankovní převod" />
+            </Picker>
+          </View>
+        </View>
+      </ScrollView>
+
+      <Pressable
+        onPress={async () => {
+          await createPDF();
+          navigation.navigate('Náhled');
+        }}
+        android_ripple={{color: '#00000050'}}
+        style={({pressed}) => [
+          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
+          styles.button_delete,
+        ]}>
+        <Text style={styles.buttonText}>Náhled</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={saveInvoice}
+        android_ripple={{color: '#00000050'}}
+        style={({pressed}) => [
+          {backgroundColor: pressed ? '#dddddd' : '#0b0'},
+          styles.button,
+        ]}>
+        <Text style={styles.buttonText}>Uložit</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -455,7 +457,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000',
-    fontSize: 16,
+    fontSize: 18,
   },
   text_cost: {
     right: 0,
@@ -491,8 +493,24 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   input: {
-    width: '40%',
-    marginHorizontal: 15,
-    borderBottomWidth: 1,
+    width: '45%',
+    borderColor: '#555555',
+    borderRadius: 25,
+    backgroundColor: '#dddddd',
+    textAlign: 'left',
+    fontSize: 18,
+    margin: 10,
+  },
+  input_note: {
+    width: '95%',
+    borderColor: '#555555',
+    borderRadius: 25,
+    backgroundColor: '#ffffff',
+    textAlign: 'left',
+    fontSize: 20,
+    margin: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    marginBottom: 20,
   },
 });

@@ -6,6 +6,7 @@ import Invoice from './components/Invoice';
 import ProductList from './components/ProductList';
 import ClientList from './components/ClientList';
 import ProfilList from './components/ProfilList';
+import InvoicePreview from './components/InvoicePreview';
 import ScreenProfile from './components/ScreenProfile';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
@@ -78,6 +79,7 @@ export default function App() {
           <Root.Screen name="Položky" component={ProductList} />
           <Root.Screen name="Klienti" component={ClientList} />
           <Tab.Screen name="Profily" component={ProfilList} />
+          <Tab.Screen name="Náhled" component={InvoicePreview} />
         </Root.Navigator>
       </NavigationContainer>
     </Provider>
