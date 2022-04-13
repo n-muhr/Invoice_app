@@ -103,23 +103,29 @@ export default function AddProfile({navigation}) {
 
   const getInfo = () => {
     if (ico.length > 0) {
-      fetch('https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=' + ico)
+      fetch('https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_bas.cgi?ico=' + ico)
         .then(response => response.text())
         .then(textResponse => {
           const parser = new XMLParser();
           let obj = parser.parse(textResponse);
-          const data =
-            obj['are:Ares_odpovedi']?.['are:Odpoved']?.['are:Zaznam'];
-          const name = data['are:Obchodni_firma'];
-          const address = data?.['are:Identifikace']?.['are:Adresa_ARES'];
-          const city = address?.['dtt:Nazev_obce'];
-          const street = address?.['dtt:Nazev_ulice'];
-          const numb = address?.['dtt:Cislo_domovni'];
-          const psc = address?.['dtt:PSC'];
-          console.log(city, street, numb);
+          const data = obj['are:Ares_odpovedi']?.['are:Odpoved']?.['D:VBAS'];
+          const name = data['D:OF'];
+          const dic = data['D:DIC'];
+          const city = data['D:AA']?.['D:N'];
+          const street = data['D:AD']?.['D:UC'];
+          const psc = data['D:AA']?.['D:PSC'];
+
+          if (dic !== undefined) {
+            setDic(dic);
+            setPaysDPH(true);
+          } else {
+            setDic('');
+            setPaysDPH(false);
+          }
+
           setName(name);
           setCity(city);
-          setAddress(street + ' ' + numb);
+          setAddress(street);
           setDesNum(String(psc));
         })
         .catch(error => {
@@ -159,7 +165,7 @@ export default function AddProfile({navigation}) {
           value={descriptive_number}
           onChangeText={value => setDesNum(value)}
           style={styles.input}
-          placeholder="Číslo popisné"
+          placeholder="PSC"
         />
         <TextInput
           value={city}

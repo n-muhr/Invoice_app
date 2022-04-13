@@ -154,7 +154,7 @@ export default function AddClientScreen({navigation}) {
           value={descriptive_number}
           onChangeText={value => setDescriptiveNumber(value)}
           style={styles.input}
-          placeholder="Číslo popisné"
+          placeholder="PSC"
         />
         <TextInput
           value={city}

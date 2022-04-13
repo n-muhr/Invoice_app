@@ -404,7 +404,7 @@ export default function Invoice({navigation}) {
           <View style={styles.item_body}>
             <Picker
               selectedValue={paymentMethod}
-              style={{height: 50, width: '60%'}}
+              style={{height: 50, width: '60%', backgroundColor: '#dddddd'}}
               onValueChange={(itemValue, itemIndex) =>
                 setPaymentMethod(itemValue)
               }>
