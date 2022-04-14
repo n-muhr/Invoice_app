@@ -60,7 +60,7 @@ export default function ScreenClients({navigation}) {
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
-      console.log(item);
+      //console.log(item);
       let Client = {
         id: item.id,
         name: item.name,

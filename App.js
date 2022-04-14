@@ -8,6 +8,7 @@ import ClientList from './components/ClientList';
 import ProfilList from './components/ProfilList';
 import InvoicePreview from './components/InvoicePreview';
 import ScreenProfile from './components/ScreenProfile';
+import Stats from './components/Stats';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
@@ -29,6 +30,10 @@ function BottomTabBar() {
             iconName = SolidIcons.fileInvoice;
             size = focused ? 25 : 20;
             color = focused ? '#00F' : '#333';
+          } else if (route.name === 'Stats') {
+            iconName = SolidIcons.chartBar;
+            size = focused ? 25 : 20;
+            color = focused ? '#00f' : '#333';
           } else if (route.name === 'Klienti') {
             iconName = SolidIcons.user;
             size = focused ? 25 : 20;
@@ -52,6 +57,7 @@ function BottomTabBar() {
       })}
       barStyle={{backgroundColor: '#FF8C00'}}>
       <Tab.Screen name="Faktury" component={ScreenInvoice} />
+      <Tab.Screen name="Stats" component={Stats} />
       <Tab.Screen name="Klienti" component={ScreenClients} />
       <Tab.Screen name="Profily" component={ScreenProfile} />
     </Tab.Navigator>
