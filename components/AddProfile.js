@@ -39,6 +39,7 @@ export default function AddProfile({navigation}) {
   const [section, setSection] = useState('');
   const [part, setPart] = useState('');
   const [court, setCourt] = useState('');
+  const [account, setAccount] = useState('');
 
   const {currProfile} = useSelector(state => state.profileReducer);
 
@@ -49,7 +50,7 @@ export default function AddProfile({navigation}) {
       if (currProfile === undefined) {
         db.transaction(tx => {
           tx.executeSql(
-            'insert into profile(name, email, address, descriptive_number, city, pays_dph, ico, dic, description) values (?,?,?,?,?,?,?,?,?)',
+            'insert into profile(name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part) values (?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
               name,
               email,
@@ -60,6 +61,10 @@ export default function AddProfile({navigation}) {
               ico,
               dic,
               description,
+              account,
+              court,
+              section,
+              part,
             ],
           );
         });
@@ -67,7 +72,7 @@ export default function AddProfile({navigation}) {
       } else {
         db.transaction(tx => {
           tx.executeSql(
-            'update profile set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, pays_dph = ?, ico = ?, dic = ?, description = ? where id = ?',
+            'update profile set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, pays_dph = ?, ico = ?, dic = ?, description = ?, account =?, court = ?, section = ?, part = ? where id = ?',
             [
               name,
               email,
@@ -78,6 +83,10 @@ export default function AddProfile({navigation}) {
               ico,
               dic,
               description,
+              account,
+              court,
+              section,
+              part,
               currProfile.id,
             ],
           );
@@ -241,6 +250,12 @@ export default function AddProfile({navigation}) {
           onChangeText={value => setPart(value)}
           style={styles.input}
           placeholder="Složka"
+        />
+        <TextInput
+          value={account}
+          onChangeText={value => setAccount(value)}
+          style={styles.input}
+          placeholder="Bankovní účet"
         />
         <TextInput
           value={description}

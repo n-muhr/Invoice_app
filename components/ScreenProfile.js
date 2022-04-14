@@ -12,6 +12,7 @@ import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
 import {setCurrentProfile} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
+import {createTableProfile} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -29,15 +30,6 @@ export default function ScreenProfile({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
-
-  //vytvoreni table profile pokud neexistuje
-  const createTable = () => {
-    db.transaction(txn => {
-      txn.executeSql(
-        'Create table if not exists profile(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(8), city VARCHAR(30), pays_dph BOOLEAN, ico VARCHAR(15), dic VARCHAR(15), description TEXT)',
-      );
-    });
-  };
 
   //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) =>
@@ -61,7 +53,7 @@ export default function ScreenProfile({navigation}) {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description from profile',
+      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part from profile',
       [],
     );
 
@@ -80,6 +72,10 @@ export default function ScreenProfile({navigation}) {
         ico: item.ico,
         dic: item.dic,
         description: item.description,
+        account: item.account,
+        court: item.court,
+        section: item.section,
+        part: item.part,
       };
       setProfiles(Profiles => [...Profiles, Profile]);
     }
@@ -93,7 +89,7 @@ export default function ScreenProfile({navigation}) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    createTable();
+    createTableProfile();
     if (isFocused) {
       getProfile();
     }

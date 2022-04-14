@@ -16,7 +16,13 @@ import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useDispatch} from 'react-redux';
 import {setCurrentInvoce} from '../src/redux/actions';
-import {getLastInvoice, ExecuteQuery, getProfile, getClient} from './database';
+import {
+  getLastInvoice,
+  ExecuteQuery,
+  getProfile,
+  getClient,
+  updateProfileAccount,
+} from './database';
 import {Picker} from '@react-native-picker/picker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {pdfContent} from './PDFContent';
@@ -42,6 +48,7 @@ export default function Invoice({navigation}) {
   const [paymentMethod, setPaymentMethod] = useState('Hotovost');
   const [payed, setPayed] = useState('');
   const [note, setNote] = useState('');
+  const [account, setAccount] = useState('');
 
   const [isPaid, setIsPaid] = useState(false);
 
@@ -100,6 +107,7 @@ export default function Invoice({navigation}) {
           ],
         );
       });
+      updateProfileAccount(profile, account);
     }
 
     let invoice = {
@@ -152,6 +160,7 @@ export default function Invoice({navigation}) {
       if (currInvoice.profile_id !== '') {
         let profile = await getProfile(currInvoice.profile_id);
         setProfileName(profile.name);
+        setAccount(profile.account);
       }
 
       setProfile(currInvoice.profile_id);
@@ -311,6 +320,28 @@ export default function Invoice({navigation}) {
               multiline
             />
           </View>
+          <View style={styles.item_body}>
+            <Picker
+              selectedValue={paymentMethod}
+              style={{height: 50, width: '60%', backgroundColor: '#dddddd'}}
+              onValueChange={(itemValue, itemIndex) =>
+                setPaymentMethod(itemValue)
+              }>
+              <Picker.Item label="Hotovost" value="Hotovost" />
+              <Picker.Item label="Platba Kartou" value="Platba Kartou" />
+              <Picker.Item label="Bankovní převod" value="Bankovní převod" />
+            </Picker>
+          </View>
+          {paymentMethod === 'Bankovní převod' ? (
+            <View style={styles.item_body}>
+              <TextInput
+                value={account}
+                keyboardType="numeric"
+                onChangeText={value => setAccount(value)}
+                style={styles.input_note}
+              />
+            </View>
+          ) : null}
           <TouchableOpacity
             style={styles.item_body}
             onPress={() => setOpenCreated(true)}>
@@ -401,18 +432,6 @@ export default function Invoice({navigation}) {
               setOpenTaxable(false);
             }}
           />
-          <View style={styles.item_body}>
-            <Picker
-              selectedValue={paymentMethod}
-              style={{height: 50, width: '60%', backgroundColor: '#dddddd'}}
-              onValueChange={(itemValue, itemIndex) =>
-                setPaymentMethod(itemValue)
-              }>
-              <Picker.Item label="Hotovost" value="Hotovost" />
-              <Picker.Item label="Platba Kartou" value="Platba Kartou" />
-              <Picker.Item label="Bankovní převod" value="Bankovní převod" />
-            </Picker>
-          </View>
         </View>
       </ScrollView>
 

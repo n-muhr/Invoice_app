@@ -5,6 +5,7 @@ import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
 import {setInvoiceProfile, setCurrentProfile} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
+import {createTableProfile} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -22,15 +23,6 @@ export default function ProfileList({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
-
-  //vytvoreni table profile pokud neexistuje
-  const createTable = () => {
-    db.transaction(txn => {
-      txn.executeSql(
-        'Create table if not exists profile(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(8), city VARCHAR(30), pays_dph BOOLEAN, ico VARCHAR(15), dic VARCHAR(15), description TEXT)',
-      );
-    });
-  };
 
   //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) =>
@@ -81,8 +73,8 @@ export default function ProfileList({navigation}) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    createTableProfile();
     if (isFocused) {
-      createTable();
       getProfile();
     }
   }, [isFocused]);

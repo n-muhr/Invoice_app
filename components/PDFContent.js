@@ -76,6 +76,10 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
     DIC: '',
     pays_dph: false,
     city: '',
+    account: '',
+    court: '',
+    section: '',
+    part: '',
   };
   let client = {
     id: -1,
@@ -121,7 +125,20 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
   }
   let payed = 0;
   if (item.paid) payed = total_cost;
-  else payed = item.payed;
+  else if (item.payed.length > 0) payed = item.payed;
+  let account =
+    item.payment_method === 'Bankovní převod'
+      ? '<th><span>Číslo účtu</span></th> <td><span>' +
+        profile.account +
+        '</span></td>'
+      : '';
+  let nodeCourt = '';
+  if (profile.court.length > 0) {
+    nodeCourt = 'Zapsáno v obchodním rejstříku u ' + profile.court;
+    nodeCourt += profile.section !== '' ? ', iddíl ' + profile.section : '';
+    nodeCourt += profile.part.length > 0 ? ', složka ' + profile.part : '';
+    nodeCourt += '.';
+  }
 
   const htmlContent = `
         <html>
@@ -158,7 +175,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               
                 <table class="meta">
                 <tr>
-                  <th><span>Invoice #</span></th>
+                  <th><span>Faktura #</span></th>
                   <td><span>${item.id}</span></td>
                 </tr>
                 <tr>
@@ -185,6 +202,10 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 <tr>
                   <th><span>Způsob platby</span></th>
                   <td><span>${item.payment_method}</span></td>
+                  
+                </tr>
+                <tr>
+                  ${account}
                 </tr>
               </table>
 
@@ -225,12 +246,12 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               </table>
             </article>
             <aside>
-              <h1><span>Poznámka</span></h1>
-              <div>
-                <p>${item.note}</p>
+              <h1><span>Poznámky</span></h1>
+              <div style="margin: 10px">
+                <p>${nodeCourt}</p>
               </div>
-              <div>
-                <p>Sídlo soud blabla</p>
+              <div style="margin: 10px">
+                <p>${item.note}</p>
               </div>
             </aside>
           </body>

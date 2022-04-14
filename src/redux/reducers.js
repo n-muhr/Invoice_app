@@ -34,6 +34,10 @@ const initialStateProfile = {
     DIC: '',
     pays_dph: false,
     city: '',
+    account: '',
+    court: '',
+    section: '',
+    part: '',
   },
 };
 
