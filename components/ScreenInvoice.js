@@ -64,7 +64,7 @@ export default function ScreenInvoice({navigation}) {
     setInvoices([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note from invoice',
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note from invoice order by id desc',
       [],
     );
 
@@ -89,8 +89,23 @@ export default function ScreenInvoice({navigation}) {
     }
   };
 
-  const updateInvoice = () => {
-    setInvoices(invoiceList);
+  const copyInvoice = item => {
+    let invoice = {
+      id: -1,
+      date_of_issue: item.date_of_issue,
+      due_date: item.due_date,
+      taxable_supply: item.taxable_supply,
+      payed: item.payed,
+      payment_method: item.payment_method,
+      paid: item.paid,
+      client_id: item.client_id,
+      profile_id: item.profile_id,
+      note: item.note,
+    };
+    dispatch(setInvoiceClient());
+    dispatch(setInvoiceProfile());
+    dispatch(setCurrentInvoce(invoice));
+    navigation.navigate('Faktura');
   };
 
   useEffect(() => {
@@ -122,6 +137,17 @@ export default function ScreenInvoice({navigation}) {
                   {new Date(item.date_of_issue).toLocaleDateString()}
                 </Text>
               </View>
+              <TouchableOpacity
+                style={styles.del_button}
+                onPress={() => {
+                  console.log('Copy invoice: ', item.id);
+                  copyInvoice(item);
+                }}>
+                <FontAwesome
+                  icon={SolidIcons.copy}
+                  style={{fontSize: 20, color: 'blue'}}
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.del_button}
                 onPress={() => {

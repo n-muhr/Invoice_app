@@ -70,9 +70,7 @@ export default function Invoice({navigation}) {
   const dispatch = useDispatch();
 
   const saveInvoice = () => {
-    let time_now = new Date();
-
-    if (currInvoice === undefined) {
+    if (currInvoice === undefined || currInvoice.id === -1) {
       db.transaction(tx => {
         tx.executeSql(
           'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note) values(?,?,?,?,?,?,?,?,?)',
@@ -157,27 +155,57 @@ export default function Invoice({navigation}) {
 
   const setInvoice = async () => {
     if (currInvoice !== undefined) {
-      if (currInvoice.profile_id !== '') {
-        let profile = await getProfile(currInvoice.profile_id);
-        setProfileName(profile.name);
-        setAccount(profile.account);
+      if (currInvoice.id > 0) {
+        if (currInvoice.profile_id !== '') {
+          let profile = await getProfile(currInvoice.profile_id);
+          setProfileName(profile.name);
+          setAccount(profile.account);
+        }
+
+        setProfile(currInvoice.profile_id);
+
+        if (currInvoice.client_id !== '') {
+          let client = await getClient(currInvoice.client_id);
+          setClientName(client.name);
+        }
+
+        setClient(currInvoice.client_id);
+        setPayed(currInvoice.payed.toString());
+        setPaymentMethod(currInvoice.payment_method);
+        setIsPaid(currInvoice.paid);
+        setNote(currInvoice.note);
+        setDueDate(new Date(currInvoice.due_date));
+        setTaxableDate(new Date(currInvoice.taxable_supply));
+        setCreatedDate(new Date(currInvoice.date_of_issue));
+      } else if (currInvoice.id === -1) {
+        if (currInvoice.profile_id !== '') {
+          let profile = await getProfile(currInvoice.profile_id);
+          setProfileName(profile.name);
+          setAccount(profile.account);
+        }
+
+        setProfile(currInvoice.profile_id);
+
+        if (currInvoice.client_id !== '') {
+          let client = await getClient(currInvoice.client_id);
+          setClientName(client.name);
+        }
+
+        setClient(currInvoice.client_id);
+        setPayed(currInvoice.payed.toString());
+        setPaymentMethod(currInvoice.payment_method);
+        setIsPaid(currInvoice.paid);
+        setNote(currInvoice.note);
+        setDueDate(new Date(currInvoice.due_date));
+        setTaxableDate(new Date(currInvoice.taxable_supply));
+        setCreatedDate(new Date(currInvoice.date_of_issue));
+
+        saveInvoice();
+
+        let invoice = await getLastInvoice();
+        console.log('Copy Invoice');
+        dispatch(setCurrentInvoce(invoice));
       }
-
-      setProfile(currInvoice.profile_id);
-
-      if (currInvoice.client_id !== '') {
-        let client = await getClient(currInvoice.client_id);
-        setClientName(client.name);
-      }
-
-      setClient(currInvoice.client_id);
-      setPayed(currInvoice.payed.toString());
-      setPaymentMethod(currInvoice.payment_method);
-      setIsPaid(currInvoice.paid);
-      setNote(currInvoice.note);
-      setDueDate(new Date(currInvoice.due_date));
-      setTaxableDate(new Date(currInvoice.taxable_supply));
-      setCreatedDate(new Date(currInvoice.date_of_issue));
     } else {
       await ExecuteQuery(
         'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note) values(?,?,?,?,?,?,?,?,?)',

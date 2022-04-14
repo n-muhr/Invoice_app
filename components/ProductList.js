@@ -16,13 +16,14 @@ import {
   ExecuteQuery,
 } from './database';
 import {useSelector} from 'react-redux';
+import {Picker} from '@react-native-picker/picker';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [dph, setDPH] = useState('');
+  const [dph, setDPH] = useState('21');
 
   const {currInvoice} = useSelector(state => state.invoiceReducer);
 
@@ -134,13 +135,15 @@ export default function ProductList() {
             style={styles.input}
             placeholder="Množství"
           />
-          <TextInput
-            value={dph}
-            keyboardType="numeric"
-            onChangeText={value => setDPH(value)}
-            style={styles.input}
-            placeholder="DPH"
-          />
+          <Picker
+            selectedValue={dph}
+            style={{height: 50, width: '33%', backgroundColor: '#dddddd'}}
+            onValueChange={(itemValue, itemIndex) => setDPH(itemValue)}>
+            <Picker.Item label="21%" value="21" />
+            <Picker.Item label="15%" value="15" />
+            <Picker.Item label="10%" value="10" />
+            <Picker.Item label="0%" value="0" />
+          </Picker>
         </View>
         <Pressable
           onPress={() => {
