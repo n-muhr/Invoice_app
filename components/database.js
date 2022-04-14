@@ -119,7 +119,7 @@ export function deleteProfile(id) {
 export async function getLastInvoice() {
   try {
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note from invoice order by id desc limit 1',
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice order by id desc limit 1',
       [],
     );
     var rows = selectQuery.rows;
@@ -135,8 +135,9 @@ export async function getLastInvoice() {
       client_id: item.client_id,
       profile_id: item.profile_id,
       note: item.note,
+      is_storno: item.is_storno,
+      invoice_number: item.invoice_number,
     };
-    //console.log(invoice);
     return invoice;
   } catch (err) {
     console.error(err);
@@ -175,11 +176,7 @@ export function deleteProduct(id) {
 
 export function deleteInvoice(id) {
   db.transaction(tx => {
-    tx.executeSql('delete from invoice where id = ?', [id]);
-  });
-
-  db.transaction(tx => {
-    tx.executeSql('delete from product where invoice_id = ?', [id]);
+    tx.executeSql('update invoice set is_storno =? where id = ?', [true, id]);
   });
 }
 
@@ -196,6 +193,15 @@ export function createTableClient() {
   db.transaction(txn => {
     txn.executeSql(
       'Create table if not exists client(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(10), city VARCHAR(30), ico VARCHAR(15), dic VARCHAR(15), description TEXT)',
+    );
+  });
+}
+
+//vytvoreni table invoice pokud neexistuje
+export function createTableInvoice() {
+  db.transaction(txn => {
+    txn.executeSql(
+      'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), payed decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer, note TEXT, is_storno BOOLEAN, invoice_number VARCHAR(15))',
     );
   });
 }

@@ -72,7 +72,7 @@ export default function App() {
               fontWeight: 'bold',
             },
           }}>
-          <Root.Screen name="My Invoices" component={BottomTabBar} />
+          <Root.Screen name="Moje faktury" component={BottomTabBar} />
           <Root.Screen name="Přidat klienta" component={AddClientScreen} />
           <Root.Screen name="Přidat profil" component={AddProfile} />
           <Root.Screen name="Faktura" component={Invoice} />

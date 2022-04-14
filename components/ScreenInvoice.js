@@ -11,7 +11,7 @@ import {useDispatch} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
-import {deleteInvoice} from './database';
+import {deleteInvoice, createTableInvoice} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -34,15 +34,6 @@ export default function ScreenInvoice({navigation}) {
 
   const {invoiceList} = useSelector(state => state.invoiceReducer);
 
-  //vytvoreni table invoice pokud neexistuje
-  const createTable = () => {
-    db.transaction(txn => {
-      txn.executeSql(
-        'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), payed decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer, note TEXT)',
-      );
-    });
-  };
-
   //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) =>
     new Promise((resolve, reject) => {
@@ -64,7 +55,7 @@ export default function ScreenInvoice({navigation}) {
     setInvoices([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note from invoice order by id desc',
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice order by id desc',
       [],
     );
 
@@ -83,9 +74,10 @@ export default function ScreenInvoice({navigation}) {
         client_id: item.client_id,
         profile_id: item.profile_id,
         note: item.note,
+        is_storno: item.is_storno,
+        invoice_number: item.invoice_number,
       };
       setInvoices(Invoices => [...Invoices, Invoice]);
-      //dispatch(setInvoices(Invoices));
     }
   };
 
@@ -101,6 +93,8 @@ export default function ScreenInvoice({navigation}) {
       client_id: item.client_id,
       profile_id: item.profile_id,
       note: item.note,
+      is_storno: item.is_storno,
+      invoice_number: item.invoice_number,
     };
     dispatch(setInvoiceClient());
     dispatch(setInvoiceProfile());
@@ -109,7 +103,7 @@ export default function ScreenInvoice({navigation}) {
   };
 
   useEffect(() => {
-    createTable();
+    createTableInvoice();
     getInvoice();
     if (isFocused) {
       console.log('focus invoice list');
@@ -136,6 +130,9 @@ export default function ScreenInvoice({navigation}) {
                   Datum vytvoření:{' '}
                   {new Date(item.date_of_issue).toLocaleDateString()}
                 </Text>
+                {item.is_storno === 1 ? (
+                  <Text style={styles.text}> Tato faktura je stornovaná </Text>
+                ) : null}
               </View>
               <TouchableOpacity
                 style={styles.del_button}
@@ -148,18 +145,20 @@ export default function ScreenInvoice({navigation}) {
                   style={{fontSize: 20, color: 'blue'}}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.del_button}
-                onPress={() => {
-                  console.log('Delete invoice: ', item.id);
-                  deleteInvoice(item.id);
-                  getInvoice();
-                }}>
-                <FontAwesome
-                  icon={SolidIcons.trashAlt}
-                  style={{fontSize: 20, color: 'red'}}
-                />
-              </TouchableOpacity>
+              {item.is_storno === 0 ? (
+                <TouchableOpacity
+                  style={styles.del_button}
+                  onPress={() => {
+                    console.log('Delete invoice: ', item.id);
+                    deleteInvoice(item.id);
+                    getInvoice();
+                  }}>
+                  <FontAwesome
+                    icon={SolidIcons.trashAlt}
+                    style={{fontSize: 20, color: 'red'}}
+                  />
+                </TouchableOpacity>
+              ) : null}
             </View>
           </TouchableOpacity>
         )}
@@ -199,7 +198,7 @@ const styles = StyleSheet.create({
   item: {
     justifyContent: 'center',
     marginHorizontal: 15,
-    marginVertical: 20,
+    marginVertical: 5,
     backgroundColor: '#fff',
     borderRadius: 10,
   },

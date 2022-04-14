@@ -111,10 +111,16 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
       '</span></td>';
     productTable =
       productTable + '<td><span>' + products[i].price + '</span></td>';
-    productTable =
-      productTable + '<td><span>' + products[i].dph + ' %' + '</span></td>';
-    productTable = productTable + '<td><span>' + total_price + '</span></td>';
-    productTable = productTable + '<td><span>' + dph_price + '</span></td>';
+    if (profile.pays_dph) {
+      productTable =
+        productTable + '<td><span>' + products[i].dph + ' %' + '</span></td>';
+      productTable = productTable + '<td><span>' + total_price + '</span></td>';
+      productTable = productTable + '<td><span>' + dph_price + '</span></td>';
+    } else {
+      productTable = productTable + '<td><span></span></td>';
+      productTable = productTable + '<td><span></span></td>';
+      productTable = productTable + '<td><span></span></td>';
+    }
     productTable =
       productTable +
       '<td><span>' +
@@ -139,7 +145,16 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
     nodeCourt += profile.part.length > 0 ? ', složka ' + profile.part : '';
     nodeCourt += '.';
   }
-
+  let storno = item.is_storno
+    ? '<div style="margin: 10px"><p>Faktura je stornovaná.</p></div>'
+    : '';
+  let taxable_date = profile.pays_dph
+    ? '<tr>' +
+      '<th><span>Zdanitelné plnění</span></th><td><span>' +
+      new Date(item.taxable_supply).toLocaleDateString() +
+      '</span></td></tr>'
+    : '';
+  let name = profile.pays_dph ? 'Faktura/Daňový doklad' : 'Faktura';
   const htmlContent = `
         <html>
           <head>
@@ -175,7 +190,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               
                 <table class="meta">
                 <tr>
-                  <th><span>Faktura #</span></th>
+                  <th><span>${name} #</span></th>
                   <td><span>${item.id}</span></td>
                 </tr>
                 <tr>
@@ -190,12 +205,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                     item.due_date,
                   ).toLocaleDateString()}</span></td>
                 </tr>
-                <tr>
-                  <th><span>Zdanitelné plnění</span></th>
-                  <td><span>${new Date(
-                    item.taxable_supply,
-                  ).toLocaleDateString()}</span></td>
-                </tr>
+                ${taxable_date}
               </table>
 
               <table class="meta" style="float: left;">
@@ -253,6 +263,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
               <div style="margin: 10px">
                 <p>${item.note}</p>
               </div>
+              ${storno}
             </aside>
           </body>
         </html>

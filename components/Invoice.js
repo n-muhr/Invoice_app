@@ -49,6 +49,8 @@ export default function Invoice({navigation}) {
   const [payed, setPayed] = useState('');
   const [note, setNote] = useState('');
   const [account, setAccount] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
+  const [isStorno, setIsStorno] = useState(false);
 
   const [isPaid, setIsPaid] = useState(false);
 
@@ -73,7 +75,7 @@ export default function Invoice({navigation}) {
     if (currInvoice === undefined || currInvoice.id === -1) {
       db.transaction(tx => {
         tx.executeSql(
-          'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note) values(?,?,?,?,?,?,?,?,?)',
+          'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number) values(?,?,?,?,?,?,?,?,?,?,?)',
           [
             createdDate.toDateString(),
             dueDate.toDateString(),
@@ -84,13 +86,15 @@ export default function Invoice({navigation}) {
             client,
             profile,
             note,
+            isStorno,
+            invoiceNumber,
           ],
         );
       });
     } else {
       db.transaction(tx => {
         tx.executeSql(
-          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, payed = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?, note = ? where id = ?',
+          'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, payed = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?, note = ?, is_storno = ?, invoice_number = ? where id = ?',
           [
             createdDate.toDateString(),
             dueDate.toDateString(),
@@ -101,6 +105,8 @@ export default function Invoice({navigation}) {
             client,
             profile,
             note,
+            isStorno,
+            invoiceNumber,
             currInvoice.id,
           ],
         );
@@ -119,6 +125,8 @@ export default function Invoice({navigation}) {
       client_id: client,
       profile_id: profile,
       note: note,
+      is_storno: isStorno,
+      invoice_number: invoiceNumber,
     };
 
     dispatch(setCurrentInvoce(invoice));
@@ -177,6 +185,8 @@ export default function Invoice({navigation}) {
         setDueDate(new Date(currInvoice.due_date));
         setTaxableDate(new Date(currInvoice.taxable_supply));
         setCreatedDate(new Date(currInvoice.date_of_issue));
+        setIsStorno(currInvoice.is_storno);
+        setInvoiceNumber(currInvoice.invoice_number);
       } else if (currInvoice.id === -1) {
         if (currInvoice.profile_id !== '') {
           let profile = await getProfile(currInvoice.profile_id);
@@ -199,6 +209,7 @@ export default function Invoice({navigation}) {
         setDueDate(new Date(currInvoice.due_date));
         setTaxableDate(new Date(currInvoice.taxable_supply));
         setCreatedDate(new Date(currInvoice.date_of_issue));
+        setInvoiceNumber(currInvoice.invoice_number);
 
         saveInvoice();
 
@@ -208,7 +219,7 @@ export default function Invoice({navigation}) {
       }
     } else {
       await ExecuteQuery(
-        'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note) values(?,?,?,?,?,?,?,?,?)',
+        'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number) values(?,?,?,?,?,?,?,?,?,?,?)',
         [
           createdDate.toDateString(),
           dueDate.toDateString(),
@@ -219,6 +230,8 @@ export default function Invoice({navigation}) {
           client,
           profile,
           note,
+          isStorno,
+          invoiceNumber,
         ],
       );
 
@@ -298,6 +311,13 @@ export default function Invoice({navigation}) {
     <View style={styles.body}>
       <ScrollView style={styles.body}>
         <View style={styles.body}>
+          <TextInput
+            value={invoiceNumber}
+            onChangeText={value => setInvoiceNumber(value)}
+            style={styles.input_note}
+            placeholder="Číslo faktury"
+            multiline
+          />
           <TouchableOpacity style={styles.item_body} onPress={profilList}>
             <View style={styles.rows}>
               <Text style={styles.text}>Dodavatel: </Text>

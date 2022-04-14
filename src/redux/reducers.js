@@ -55,6 +55,8 @@ const initialStateInvoice = {
     client_id: -1,
     profile_id: -1,
     note: '',
+    is_storno: false,
+    invoice_number: '',
   },
   invoiceList: [],
 };
