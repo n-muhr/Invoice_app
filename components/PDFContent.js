@@ -1,4 +1,21 @@
 import {getProfile, getClient, getProducts} from './database';
+import RNQRGenerator from 'rn-qr-generator';
+
+const createQRC = async (iban, cost) => {
+  let str =
+    'SPD*1.0*ACC:' + iban + '*AM:' + cost + '*CC:CZK*MSG:PLATBA ZA ZBOZI';
+  RNQRGenerator.generate({
+    value: str,
+    height: 150,
+    width: 150,
+    fileName: 'invoice_qrcode',
+  })
+    .then(response => {
+      const {uri, width, height, base64} = response;
+      console.log(uri);
+    })
+    .catch(error => console.log('Cannot create QR code', error));
+};
 
 export const pdfContent = async item => {
   const htmlStyles = `
@@ -45,7 +62,7 @@ article:after { clear: both; content: ""; display: table; }
 article h1 { clip: rect(0 0 0 0); position: absolute; }
 article address { float: left; font-size: 125%; font-weight: bold; }
 /* table meta & balance */
-table.meta, table.balance { float: right; width: 36%; }
+table.meta, table.balance { float: right; width: 48%; }
 table.meta:after, table.balance:after { clear: both; content: ""; display: table; }
 /* table meta */
 table.meta th { width: 40%; }
@@ -155,6 +172,13 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
       '</span></td></tr>'
     : '';
   let name = profile.pays_dph ? 'Faktura/Daňový doklad' : 'Faktura';
+  let qrcode = '';
+  if (item.payment_method !== 'Hotovost') {
+    await createQRC(profile.account, total_cost - payed);
+    qrcode +=
+      '<img src="file:///data/user/0/com.invoiceapp/cache/invoice_qrcode.png" style="height:150px;float:left" />';
+  }
+
   const htmlContent = `
         <html>
           <head>
@@ -212,12 +236,12 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 <tr>
                   <th><span>Způsob platby</span></th>
                   <td><span>${item.payment_method}</span></td>
-                  
                 </tr>
                 <tr>
                   ${account}
                 </tr>
               </table>
+              ${qrcode}
 
 
               <table class="inventory">
