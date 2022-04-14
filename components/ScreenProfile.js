@@ -12,7 +12,7 @@ import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
 import {setCurrentProfile} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
-import {createTableProfile} from './database';
+import {createTableProfile, deleteProfile} from './database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -83,7 +83,7 @@ export default function ScreenProfile({navigation}) {
 
   //smazani profilu z databaze podle id
   const delProfile = async id => {
-    await ExecuteQuery('delete from profile where id = ?', [id]);
+    deleteProfile(id);
   };
 
   const isFocused = useIsFocused();

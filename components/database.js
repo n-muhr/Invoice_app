@@ -94,6 +94,26 @@ export function deleteClient(id) {
   db.transaction(tx => {
     tx.executeSql('delete from client where id = ?', [id]);
   });
+
+  db.transaction(tx => {
+    tx.executeSql('update invoice set client_id =? where client_id = ?', [
+      '',
+      id,
+    ]);
+  });
+}
+
+export function deleteProfile(id) {
+  db.transaction(tx => {
+    tx.executeSql('delete from profile where id = ?', [id]);
+  });
+
+  db.transaction(tx => {
+    tx.executeSql('update invoice set profile_id =? where profile_id = ?', [
+      '',
+      id,
+    ]);
+  });
 }
 
 export async function getLastInvoice() {
