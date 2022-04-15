@@ -62,7 +62,7 @@ export default function ScreenInvoice({navigation}) {
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
-      console.log(item);
+      //console.log(item);
       let Invoice = {
         id: item.id,
         date_of_issue: item.date_of_issue,
@@ -106,7 +106,7 @@ export default function ScreenInvoice({navigation}) {
     createTableInvoice();
     getInvoice();
     if (isFocused) {
-      console.log('focus invoice list');
+      //console.log('focus invoice list');
     }
   }, [isFocused]);
 

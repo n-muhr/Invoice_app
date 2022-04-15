@@ -235,21 +235,59 @@ export async function getProducts(id) {
 
 export async function getLastYearInvoice() {
   try {
-    let currYear = new Date();
     let firstDay = new Date(new Date().getFullYear(), 0, 1);
 
-    let currYearStr = currYear.toLocaleDateString();
-    let firstDayStr = firstDay.toLocaleDateString();
-    console.log('first day: ', firstDayStr);
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice where date_of_issue >= ? and date_of_issue <= ? ',
-      [firstDayStr, currYearStr],
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice',
+      [],
     );
     let invoices = [];
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
+      if (new Date(item.date_of_issue).getTime() < firstDay.getTime()) continue;
+      //console.log('Stats: ', item);
+
+      let invoice = {
+        id: item.id,
+        date_of_issue: item.date_of_issue,
+        due_date: item.due_date,
+        taxable_supply: item.taxable_supply,
+        payed: item.payed,
+        payment_method: item.payment_method,
+        paid: item.paid,
+        client_id: item.client_id,
+        profile_id: item.profile_id,
+        note: item.note,
+        is_storno: item.is_storno,
+        invoice_number: item.invoice_number,
+      };
+      invoices = [...invoices, invoice];
+    }
+
+    return invoices;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getLastThreeYearInvoice() {
+  try {
+    let fromYear = new Date(
+      new Date().setFullYear(new Date().getFullYear() - 3),
+    );
+    console.log(fromYear);
+    let selectQuery = await ExecuteQuery(
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice',
+      [],
+    );
+    let invoices = [];
+    var rows = selectQuery.rows;
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      if (new Date(item.date_of_issue).getTime() < fromYear.getTime()) continue;
       console.log('Stats: ', item);
+
       let invoice = {
         id: item.id,
         date_of_issue: item.date_of_issue,

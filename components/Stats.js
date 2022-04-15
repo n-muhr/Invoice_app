@@ -8,7 +8,11 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from 'react-native-chart-kit';
-import {getLastYearInvoice, getProducts} from './database';
+import {
+  getLastYearInvoice,
+  getProducts,
+  getLastThreeYearInvoice,
+} from './database';
 import {
   Table,
   TableWrapper,
@@ -37,13 +41,37 @@ let months = [
   'Prosinec',
 ];
 
+let barData = {
+  labels: months,
+  datasets: [
+    {
+      data: [20, 45, 28, 80, 99, 43, 20, 45, 28, 80, 99, 43],
+    },
+  ],
+};
+
+const barChartConfig = {
+  backgroundGradientFrom: '#fff',
+  backgroundGradientFromOpacity: 0,
+  backgroundGradientTo: '#fff',
+  backgroundGradientToOpacity: 0.5,
+
+  color: (opacity = 1) => `#023047`,
+  labelColor: (opacity = 1) => `#333`,
+  strokeWidth: 2,
+
+  barPercentage: 0.5,
+  useShadowColorFromDataset: false,
+  decimalPlaces: 0,
+};
+
 export default function Stats() {
   const [tableData, setTableData] = useState([]);
 
   const getData = async () => {
     setTableData([]);
     let data = await getLastYearInvoice();
-    console.log(data);
+    //console.log(data);
     let payed = 0;
     let to_pay = 0;
     let total = 0;
@@ -51,7 +79,7 @@ export default function Stats() {
     for (let i = 0; i < data.length; i++) {
       let products = await getProducts(data[i].id);
       for (let j = 0; j < products.length; j++) {
-        console.log(products[j]);
+        //console.log(products[j]);
         let total_prod = products[j].price * products[j].quantity;
         total_prod += (total_prod * products[j].dph) / 100;
         total += total_prod;
@@ -65,6 +93,9 @@ export default function Stats() {
     to_pay = total - payed;
 
     setTableData(previousState => [...previousState, [total, payed, to_pay]]);
+
+    data = await getLastThreeYearInvoice();
+    console.log(data);
   };
 
   let conf = {
@@ -111,7 +142,7 @@ export default function Stats() {
   }, [isFocused]);
 
   return (
-    <View style={styles.body}>
+    <ScrollView style={styles.body}>
       <View style={styles.item_body}>
         <Text style={styles.header}>
           Rychlý přehled pro rok {new Date().getFullYear()}
@@ -144,13 +175,13 @@ export default function Stats() {
         </View>
       </View>
 
-      <View style={styles.item_body}>
+      <View style={styles.item_body_graph}>
         <Text style={styles.header}>
           Vydaných faktur za rok {new Date().getFullYear()}
         </Text>
         <LineChart
           data={data}
-          width={Dimensions.get('window').width} // from react-native
+          width={Dimensions.get('window').width - 10} // from react-native
           height={220}
           yAxisLabel=""
           yAxisSuffix="ks"
@@ -163,7 +194,19 @@ export default function Stats() {
           }}
         />
       </View>
-    </View>
+
+      <View style={styles.item_body_graph}>
+        <Text style={styles.header}>Přijem za poslední 3 roky</Text>
+        <BarChart
+          data={barData}
+          width={Dimensions.get('window').width - 10}
+          height={260}
+          yAxisLabel="Kč"
+          chartConfig={barChartConfig}
+          verticalLabelRotation={30}
+        />
+      </View>
+    </ScrollView>
   );
 }
 
@@ -189,9 +232,17 @@ const styles = StyleSheet.create({
   },
   item_body: {
     backgroundColor: '#C0DDF6',
-    marginTop: 20,
+    marginVertical: 20,
     marginHorizontal: 2,
     borderColor: '#80BEF3',
     borderWidth: 1,
+  },
+  item_body_graph: {
+    backgroundColor: '#C0DDF6',
+    marginVertical: 20,
+    marginHorizontal: 2,
+    borderColor: '#80BEF3',
+    borderWidth: 1,
+    alignItems: 'center',
   },
 });
