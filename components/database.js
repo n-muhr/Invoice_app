@@ -236,16 +236,14 @@ export async function getProducts(id) {
 export async function getLastYearInvoice() {
   try {
     let currYear = new Date();
-    let lastYear = new Date(
-      new Date().setFullYear(new Date().getFullYear() - 1),
-    );
+    let firstDay = new Date(new Date().getFullYear(), 0, 1);
 
     let currYearStr = currYear.toLocaleDateString();
-    let lastYearStr = lastYear.toLocaleDateString();
-    console.log(currYearStr, ' last: ', lastYearStr);
+    let firstDayStr = firstDay.toLocaleDateString();
+    console.log('first day: ', firstDayStr);
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue from invoice where date_of_issue >= "04/10/22" and date_of_issue <= "04/15/22" ',
-      [],
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice where date_of_issue >= ? and date_of_issue <= ? ',
+      [firstDayStr, currYearStr],
     );
     let invoices = [];
     var rows = selectQuery.rows;
@@ -255,6 +253,16 @@ export async function getLastYearInvoice() {
       let invoice = {
         id: item.id,
         date_of_issue: item.date_of_issue,
+        due_date: item.due_date,
+        taxable_supply: item.taxable_supply,
+        payed: item.payed,
+        payment_method: item.payment_method,
+        paid: item.paid,
+        client_id: item.client_id,
+        profile_id: item.profile_id,
+        note: item.note,
+        is_storno: item.is_storno,
+        invoice_number: item.invoice_number,
       };
       invoices = [...invoices, invoice];
     }
