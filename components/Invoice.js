@@ -77,9 +77,9 @@ export default function Invoice({navigation}) {
         tx.executeSql(
           'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number) values(?,?,?,?,?,?,?,?,?,?,?)',
           [
-            createdDate.toDateString(),
-            dueDate.toDateString(),
-            taxableDate.toDateString(),
+            createdDate.toLocaleDateString(),
+            dueDate.toLocaleDateString(),
+            taxableDate.toLocaleDateString(),
             payed,
             paymentMethod,
             isPaid,
@@ -96,9 +96,9 @@ export default function Invoice({navigation}) {
         tx.executeSql(
           'update invoice set date_of_issue =?, due_date = ?, taxable_supply =?, payed = ?, payment_method = ?, paid = ?, client_id = ?, profile_id = ?, note = ?, is_storno = ?, invoice_number = ? where id = ?',
           [
-            createdDate.toDateString(),
-            dueDate.toDateString(),
-            taxableDate.toDateString(),
+            createdDate.toLocaleDateString(),
+            dueDate.toLocaleDateString(),
+            taxableDate.toLocaleDateString(),
             payed,
             paymentMethod,
             isPaid,
@@ -221,9 +221,9 @@ export default function Invoice({navigation}) {
       await ExecuteQuery(
         'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number) values(?,?,?,?,?,?,?,?,?,?,?)',
         [
-          createdDate.toDateString(),
-          dueDate.toDateString(),
-          taxableDate.toDateString(),
+          createdDate.toLocaleDateString(),
+          dueDate.toLocaleDateString(),
+          taxableDate.toLocaleDateString(),
           payed,
           paymentMethod,
           isPaid,

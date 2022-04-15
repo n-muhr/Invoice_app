@@ -232,3 +232,35 @@ export async function getProducts(id) {
     console.error(err);
   }
 }
+
+export async function getLastYearInvoice() {
+  try {
+    let currYear = new Date();
+    let lastYear = new Date(
+      new Date().setFullYear(new Date().getFullYear() - 1),
+    );
+
+    let currYearStr = currYear.toLocaleDateString();
+    let lastYearStr = lastYear.toLocaleDateString();
+    console.log(currYearStr, ' last: ', lastYearStr);
+    let selectQuery = await ExecuteQuery(
+      'select id, date_of_issue from invoice where date_of_issue >= "04/10/22" and date_of_issue <= "04/15/22" ',
+      [],
+    );
+    let invoices = [];
+    var rows = selectQuery.rows;
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      console.log('Stats: ', item);
+      let invoice = {
+        id: item.id,
+        date_of_issue: item.date_of_issue,
+      };
+      invoices = [...invoices, invoice];
+    }
+
+    return invoices;
+  } catch (err) {
+    console.error(err);
+  }
+}

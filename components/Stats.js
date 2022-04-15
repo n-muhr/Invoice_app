@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, Dimensions} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   LineChart,
   BarChart,
@@ -8,8 +8,14 @@ import {
   ContributionGraph,
   StackedBarChart,
 } from 'react-native-chart-kit';
+import {getLastYearInvoice} from './database';
 
 export default function Stats() {
+  const getData = async () => {
+    let data = await getLastYearInvoice();
+    console.log(data);
+  };
+
   let conf = {
     backgroundColor: '#e26a00',
     backgroundGradientFrom: '#fb8c00',
@@ -42,6 +48,10 @@ export default function Stats() {
       },
     ],
   };
+
+  useEffect(() => {
+    getData();
+  });
 
   return (
     <View>
