@@ -23,6 +23,7 @@ import {
   Cell,
 } from 'react-native-table-component';
 import {useIsFocused} from '@react-navigation/native';
+import LineData from './charts/LineData';
 
 let tableTitle = ['Celkem'];
 let tableHead = ['Měsíc', 'Vystaveno', 'Uhrazeno', 'Zbývá k uhrazení'];
@@ -68,6 +69,24 @@ const barChartConfig = {
 export default function Stats() {
   const [tableData, setTableData] = useState([]);
 
+  const [dataLine, setDataLine] = useState([]);
+
+  const monthsNow = () => {
+    let m = [];
+    for (let i = 0; i <= new Date().getMonth(); i++) {
+      m.push(months[i]);
+    }
+    return m;
+  };
+
+  let resultLine = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+  const monthInvoiceCount = num => {
+    const date = new Date(num);
+    resultLine[date.getMonth()] += 1;
+    //console.log(result);
+  };
+
   const getData = async () => {
     setTableData([]);
     let data = await getLastYearInvoice();
@@ -77,6 +96,7 @@ export default function Stats() {
     let total = 0;
 
     for (let i = 0; i < data.length; i++) {
+      monthInvoiceCount(data[i].date_of_issue);
       let products = await getProducts(data[i].id);
       for (let j = 0; j < products.length; j++) {
         //console.log(products[j]);
@@ -94,43 +114,13 @@ export default function Stats() {
 
     setTableData(previousState => [...previousState, [total, payed, to_pay]]);
 
-    data = await getLastThreeYearInvoice();
-    console.log(data);
-  };
+    let n = monthsNow().length;
+    setDataLine(resultLine.slice(0, n));
 
-  let conf = {
-    backgroundColor: '#e26a00',
-    backgroundGradientFrom: '#fb8c00',
-    backgroundGradientTo: '#ffa726',
-    decimalPlaces: 0, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    style: {
-      borderRadius: 16,
-      width: '100',
-    },
-    propsForDots: {
-      r: '6',
-      strokeWidth: '2',
-      stroke: '#ffa726',
-    },
-  };
+    console.log(dataLine);
 
-  const monthsNow = () => {
-    let m = [];
-    for (let i = 0; i <= new Date().getMonth(); i++) {
-      m.push(months[i]);
-    }
-    return m;
-  };
-
-  let data = {
-    labels: monthsNow(),
-    datasets: [
-      {
-        data: [0, 1, 0, 10],
-      },
-    ],
+    //data = await getLastThreeYearInvoice();
+    //console.log(data);
   };
 
   const isFocused = useIsFocused();
@@ -150,26 +140,15 @@ export default function Stats() {
 
         <View style={styles.container}>
           <Table borderStyle={{borderWidth: 1}}>
-            <Row
-              data={tableHead}
-              flexArr={[1, 1, 1, 1]}
-              style={styles.head}
-              textStyle={styles.text}
-            />
+            <Row data={tableHead} flexArr={[1, 1, 1, 1]} style={styles.head} />
             {/* Řádky s daty */}
             <TableWrapper style={styles.wrapper}>
               <Col
                 data={tableTitle}
                 style={styles.title}
                 heightArr={[28, 28]}
-                textStyle={styles.text}
               />
-              <Rows
-                data={tableData}
-                flexArr={[1, 1, 1]}
-                style={styles.row}
-                textStyle={styles.text}
-              />
+              <Rows data={tableData} flexArr={[1, 1, 1]} style={styles.row} />
             </TableWrapper>
           </Table>
         </View>
@@ -179,20 +158,8 @@ export default function Stats() {
         <Text style={styles.header}>
           Vydaných faktur za rok {new Date().getFullYear()}
         </Text>
-        <LineChart
-          data={data}
-          width={Dimensions.get('window').width - 10} // from react-native
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix="ks"
-          yAxisInterval={1} // optional, defaults to 1
-          chartConfig={conf}
-          bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 16,
-          }}
-        />
+
+        <LineData dataLine={dataLine} months={monthsNow()} />
       </View>
 
       <View style={styles.item_body_graph}>
@@ -221,7 +188,9 @@ const styles = StyleSheet.create({
   head: {height: 40, backgroundColor: '#f1f8ff'},
   wrapper: {flexDirection: 'row'},
   title: {flex: 1, backgroundColor: '#f6f8fa'},
-  row: {height: 28},
+  row: {
+    height: 28,
+  },
   text: {textAlign: 'center'},
   header: {
     textAlign: 'center',
@@ -231,14 +200,14 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   item_body: {
-    backgroundColor: '#C0DDF6',
+    //backgroundColor: '#C0DDF6',
     marginVertical: 20,
     marginHorizontal: 2,
     borderColor: '#80BEF3',
     borderWidth: 1,
   },
   item_body_graph: {
-    backgroundColor: '#C0DDF6',
+    //backgroundColor: '#C0DDF6',
     marginVertical: 20,
     marginHorizontal: 2,
     borderColor: '#80BEF3',
