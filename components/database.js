@@ -310,3 +310,17 @@ export async function getLastThreeYearInvoice() {
     console.error(err);
   }
 }
+
+export async function countInvoice() {
+  try {
+    let count = 0;
+    let selectQuery = await ExecuteQuery('select count(*) from invoice', []);
+
+    var rows = selectQuery.rows;
+    let item = rows.item(0);
+    count = item['count(*)'];
+    return count;
+  } catch (err) {
+    console.error(err);
+  }
+}

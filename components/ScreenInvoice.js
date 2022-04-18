@@ -125,7 +125,9 @@ export default function ScreenInvoice({navigation}) {
             }}>
             <View style={styles.rows}>
               <View style={styles.item_body}>
-                <Text style={styles.text}>ID faktury: {item.id}</Text>
+                <Text style={styles.text}>
+                  ID faktury: {item.invoice_number}
+                </Text>
                 <Text style={styles.text}>
                   Datum vytvoření:{' '}
                   {new Date(item.date_of_issue).toLocaleDateString()}
