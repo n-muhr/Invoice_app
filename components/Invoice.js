@@ -22,6 +22,7 @@ import {
   getProfile,
   getClient,
   updateProfileAccount,
+  countInvoice,
 } from './database';
 import {Picker} from '@react-native-picker/picker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
@@ -161,6 +162,19 @@ export default function Invoice({navigation}) {
     let file = await RNHTMLtoPDF.convert(options);
   };
 
+  const getNumberInvoice = str => {
+    switch (str.length) {
+      case 1:
+        return '000' + str;
+      case 2:
+        return '00' + str;
+      case 3:
+        return '0' + str;
+      case 4:
+        return str;
+    }
+  };
+
   const setInvoice = async () => {
     if (currInvoice !== undefined) {
       if (currInvoice.id > 0) {
@@ -209,7 +223,13 @@ export default function Invoice({navigation}) {
         setDueDate(new Date(currInvoice.due_date));
         setTaxableDate(new Date(currInvoice.taxable_supply));
         setCreatedDate(new Date(currInvoice.date_of_issue));
-        setInvoiceNumber(currInvoice.invoice_number);
+
+        let n = await countInvoice();
+        let date = String(new Date().getFullYear());
+        n += 1;
+        let str = getNumberInvoice(String(n));
+        let num = String(date + str);
+        setInvoiceNumber(num);
 
         saveInvoice();
 
@@ -237,6 +257,13 @@ export default function Invoice({navigation}) {
 
       let invoice = await getLastInvoice();
       console.log('New Invoice');
+      let n = await countInvoice();
+      let date = String(new Date().getFullYear());
+      let str = getNumberInvoice(String(n));
+      let num = String(date + str);
+      setInvoiceNumber(num);
+      invoice.invoice_number = num;
+
       dispatch(setCurrentInvoce(invoice));
     }
 
