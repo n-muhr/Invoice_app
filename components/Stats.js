@@ -24,6 +24,7 @@ import {
 } from 'react-native-table-component';
 import {useIsFocused} from '@react-navigation/native';
 import LineData from './charts/LineData';
+import TableData from './charts/TableData';
 
 let tableTitle = ['Celkem'];
 let tableHead = ['Měsíc', 'Vystaveno', 'Uhrazeno', 'Zbývá k uhrazení'];
@@ -68,6 +69,7 @@ const barChartConfig = {
 
 export default function Stats() {
   const [tableData, setTableData] = useState([]);
+  let tableDataTest = [];
 
   const [dataLine, setDataLine] = useState([]);
 
@@ -84,43 +86,60 @@ export default function Stats() {
   const monthInvoiceCount = num => {
     const date = new Date(num);
     resultLine[date.getMonth()] += 1;
-    //console.log(result);
   };
 
   const getData = async () => {
     setTableData([]);
     let data = await getLastYearInvoice();
-    //console.log(data);
-    let payed = 0;
-    let to_pay = 0;
-    let total = 0;
+
+    for (let i = monthsNow().length; i >= 0; i--) {
+      let payedM = 0;
+      let to_payM = 0;
+      let totalM = 0;
+      let was_found = false;
+      for (let j = 0; j < data.length; j++) {
+        if (new Date(data[j].date_of_issue).getMonth() === i) {
+          was_found = true;
+          if (!tableTitle.includes(months[i])) tableTitle.unshift(months[i]);
+
+          let products = await getProducts(data[j].id);
+          for (let p = 0; p < products.length; p++) {
+            let total_prod = products[p].price * products[p].quantity;
+            total_prod += (total_prod * products[p].dph) / 100;
+            totalM += total_prod;
+            if (data[j].paid) {
+              payedM += total_prod;
+            }
+          }
+          if (!data[j].paid) payedM += data[j].payed;
+        }
+      }
+      to_payM = totalM - payedM;
+      if (was_found)
+        tableDataTest.unshift([
+          Number(totalM),
+          Number(payedM),
+          Number(to_payM),
+        ]);
+    }
+
+    let celkem = [0, 0, 0];
+    for (let i = 0; i < tableDataTest.length; i++) {
+      celkem[0] += tableDataTest[i][0];
+      celkem[1] += tableDataTest[i][1];
+      celkem[2] += tableDataTest[i][2];
+    }
+    tableDataTest.push(celkem);
+    setTableData(tableDataTest);
+
+    //console.log('Table data: ', tableData);
 
     for (let i = 0; i < data.length; i++) {
       monthInvoiceCount(data[i].date_of_issue);
-      let products = await getProducts(data[i].id);
-      for (let j = 0; j < products.length; j++) {
-        //console.log(products[j]);
-        let total_prod = products[j].price * products[j].quantity;
-        total_prod += (total_prod * products[j].dph) / 100;
-        total += total_prod;
-        if (data[i].isPaid) {
-          payed += total_prod;
-        }
-      }
-      if (!data[i].isPaid) payed += data[i].payed;
     }
-
-    to_pay = total - payed;
-
-    setTableData(previousState => [...previousState, [total, payed, to_pay]]);
 
     let n = monthsNow().length;
     setDataLine(resultLine.slice(0, n));
-
-    console.log(dataLine);
-
-    //data = await getLastThreeYearInvoice();
-    //console.log(data);
   };
 
   const isFocused = useIsFocused();
@@ -138,31 +157,21 @@ export default function Stats() {
           Rychlý přehled pro rok {new Date().getFullYear()}
         </Text>
 
-        <View style={styles.container}>
-          <Table borderStyle={{borderWidth: 1}}>
-            <Row data={tableHead} flexArr={[1, 1, 1, 1]} style={styles.head} />
-            {/* Řádky s daty */}
-            <TableWrapper style={styles.wrapper}>
-              <Col
-                data={tableTitle}
-                style={styles.title}
-                heightArr={[28, 28]}
-              />
-              <Rows data={tableData} flexArr={[1, 1, 1]} style={styles.row} />
-            </TableWrapper>
-          </Table>
-        </View>
+        <TableData
+          tableTitle={tableTitle}
+          tableHead={tableHead}
+          tableData={tableData}
+        />
       </View>
 
       <View style={styles.item_body_graph}>
         <Text style={styles.header}>
           Vydaných faktur za rok {new Date().getFullYear()}
         </Text>
-
         <LineData dataLine={dataLine} months={monthsNow()} />
       </View>
 
-      <View style={styles.item_body_graph}>
+      {/* <View style={styles.item_body_graph}>
         <Text style={styles.header}>Přijem za poslední 3 roky</Text>
         <BarChart
           data={barData}
@@ -172,7 +181,7 @@ export default function Stats() {
           chartConfig={barChartConfig}
           verticalLabelRotation={30}
         />
-      </View>
+      </View> */}
     </ScrollView>
   );
 }
