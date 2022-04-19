@@ -3,8 +3,9 @@ export const SET_CURR_PROFILE = 'SET_CURR_PROFILE';
 export const SET_INVOICE_CLIENT = 'SET_INVOICE_CLIENT';
 export const SET_INVOICE_PROFILE = 'SET_INVOICE_PROFILE';
 export const SET_CURR_INVOICE = 'SET_CURR_INVOICE';
-export const SET__INVOICES = 'SET_INVOICES';
-export const SET__PRODUKTS = 'SET_PRODUKTS';
+export const SET_INVOICES = 'SET_INVOICES';
+export const SET_PRODUCTS = 'SET_PRODUCTS';
+export const SET_COPY_INV = 'SET_COPY_INV';
 
 export const setCurrentClient = currClient => dispatch => {
   dispatch({
@@ -24,6 +25,13 @@ export const setCurrentInvoce = currInvoice => dispatch => {
   dispatch({
     type: SET_CURR_INVOICE,
     payload: currInvoice,
+  });
+};
+
+export const setCopyInvoice = invoiceCopy => dispatch => {
+  dispatch({
+    type: SET_COPY_INV,
+    payload: invoiceCopy,
   });
 };
 

@@ -164,12 +164,12 @@ export default function Stats() {
         />
       </View>
 
-      <View style={styles.item_body_graph}>
+      {/* <View style={styles.item_body_graph}>
         <Text style={styles.header}>
           Vydaných faktur za rok {new Date().getFullYear()}
         </Text>
         <LineData dataLine={dataLine} months={monthsNow()} />
-      </View>
+      </View> */}
 
       {/* <View style={styles.item_body_graph}>
         <Text style={styles.header}>Přijem za poslední 3 roky</Text>

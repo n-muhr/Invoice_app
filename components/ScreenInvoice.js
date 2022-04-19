@@ -6,6 +6,7 @@ import {
   setInvoiceProfile,
   setCurrentInvoce,
   setInvoices,
+  setCopyInvoice,
 } from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
@@ -99,6 +100,7 @@ export default function ScreenInvoice({navigation}) {
     dispatch(setInvoiceClient());
     dispatch(setInvoiceProfile());
     dispatch(setCurrentInvoce(invoice));
+    dispatch(setCopyInvoice(item.id));
     navigation.navigate('Faktura');
   };
 

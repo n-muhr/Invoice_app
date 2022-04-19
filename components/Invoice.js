@@ -23,6 +23,7 @@ import {
   getClient,
   updateProfileAccount,
   countInvoice,
+  copyProducts,
 } from './database';
 import {Picker} from '@react-native-picker/picker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
@@ -64,7 +65,7 @@ export default function Invoice({navigation}) {
   const [createdDate, setCreatedDate] = useState(new Date());
   const [openCreated, setOpenCreated] = useState(false);
 
-  const {invoiceClient, invoiceProfile, currInvoice} = useSelector(
+  const {invoiceClient, invoiceProfile, currInvoice, invoiceCopy} = useSelector(
     state => state.invoiceReducer,
   );
 
@@ -234,7 +235,8 @@ export default function Invoice({navigation}) {
         saveInvoice();
 
         let invoice = await getLastInvoice();
-        console.log('Copy Invoice');
+        console.log('Copy Invoice: ', invoiceCopy);
+        await copyProducts(invoiceCopy, n);
         dispatch(setCurrentInvoce(invoice));
       }
     } else {

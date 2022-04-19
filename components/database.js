@@ -216,6 +216,7 @@ export async function getProducts(id) {
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
+      console.log(item);
       let product = {
         id: item.id,
         invoice_id: item.invoice_id,
@@ -228,6 +229,25 @@ export async function getProducts(id) {
     }
 
     return products;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function copyProducts(id_old, id_new) {
+  try {
+    let selectQuery = await ExecuteQuery(
+      'select id,invoice_id,description, price, quantity, dph from product where invoice_id = ?',
+      [id_old],
+    );
+    var rows = selectQuery.rows;
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      await ExecuteQuery(
+        'insert into product(invoice_id,description, price, quantity, dph) values (?,?,?,?,?)',
+        [id_new, item.description, item.price, item.quantity, item.dph],
+      );
+    }
   } catch (err) {
     console.error(err);
   }
