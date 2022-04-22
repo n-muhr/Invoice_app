@@ -125,7 +125,7 @@ export default function ScreenClients({navigation}) {
         style={styles.button}
         onPress={() => {
           dispatch(setCurrentClient());
-          navigation.navigate('Přidat klienta');
+          navigation.navigate('Login');
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}

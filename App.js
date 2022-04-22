@@ -9,6 +9,8 @@ import ProfilList from './components/ProfilList';
 import InvoicePreview from './components/InvoicePreview';
 import ScreenProfile from './components/ScreenProfile';
 import Stats from './components/Stats';
+import Login from './components/user/Login';
+import Register from './components/user/Register';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
@@ -17,6 +19,8 @@ import AddProfile from './components/AddProfile';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {Provider} from 'react-redux';
 import {Store} from './src/redux/rootReducer';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+//import BottomTabBar from './components/navigation/BottomTabBar';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -64,6 +68,8 @@ function BottomTabBar() {
   );
 }
 
+//const Drawer = createDrawerNavigator();
+
 const Root = createStackNavigator();
 
 export default function App() {
@@ -71,13 +77,17 @@ export default function App() {
     <Provider store={Store}>
       <NavigationContainer>
         <Root.Navigator
+          initialRouteName="Login"
           screenOptions={{
             headerTitleAlign: 'center',
+            headerShown: false,
             headerTitleStyle: {
               fontSize: 18,
               fontWeight: 'bold',
             },
           }}>
+          <Root.Screen name="Login" component={Login} />
+          <Root.Screen name="Registrace" component={Register} />
           <Root.Screen name="Moje faktury" component={BottomTabBar} />
           <Root.Screen name="Přidat klienta" component={AddClientScreen} />
           <Root.Screen name="Přidat profil" component={AddProfile} />

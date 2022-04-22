@@ -3,11 +3,17 @@ import React from 'react';
 import {StackedBarChart} from 'react-native-chart-kit';
 
 export default function StackedBarData() {
+  let date = new Date();
   const data = {
-    labels: ['Test1', 'Test2'],
-    legend: ['L1', 'L2', 'L3'],
+    labels: [
+      String(date.getFullYear() - 2),
+      String(date.getFullYear() - 1),
+      String(date.getFullYear()),
+    ],
+    legend: ['Vystaveno', 'Uhrazeno', 'K úhradě'],
     data: [
       [60, 60, 60],
+      [30, 30, 60],
       [30, 30, 60],
     ],
     barColors: ['#dfe4ea', '#ced6e0', '#a4b0be'],

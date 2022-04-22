@@ -148,7 +148,7 @@ export default function AddProfile({navigation}) {
           setDesNum(String(psc));
           if (court !== undefined) setCourt(court);
           if (section !== undefined) setSection(section.charAt(0));
-          if (section !== undefined) setPart(section.substring(2));
+          if (part !== undefined) setPart(section.substring(2));
         })
         .catch(error => {
           console.log(error);

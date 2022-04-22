@@ -25,6 +25,7 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 import LineData from './charts/LineData';
 import TableData from './charts/TableData';
+import StackedBarData from './charts/StackedBarData';
 
 let tableTitle = ['Celkem'];
 let tableHead = ['Měsíc', 'Vystaveno', 'Uhrazeno', 'Zbývá k uhrazení'];
@@ -164,12 +165,13 @@ export default function Stats() {
         />
       </View>
 
-      {/* <View style={styles.item_body_graph}>
+      <View style={styles.item_body_graph}>
         <Text style={styles.header}>
           Vydaných faktur za rok {new Date().getFullYear()}
         </Text>
-        <LineData dataLine={dataLine} months={monthsNow()} />
-      </View> */}
+        {/* <StackedBarData /> */}
+        {/* <LineData dataLine={dataLine} months={monthsNow()} /> */}
+      </View>
 
       {/* <View style={styles.item_body_graph}>
         <Text style={styles.header}>Přijem za poslední 3 roky</Text>
@@ -187,7 +189,7 @@ export default function Stats() {
 }
 
 const styles = StyleSheet.create({
-  body: {flex: 1},
+  body: {flex: 1, backgroundColor: '#292C33'},
   container: {
     padding: 1,
     margin: 5,
@@ -205,22 +207,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
     margin: 5,
   },
   item_body: {
     //backgroundColor: '#C0DDF6',
     marginVertical: 20,
     marginHorizontal: 2,
-    borderColor: '#80BEF3',
-    borderWidth: 1,
+    //borderColor: '#80BEF3',
+    //borderWidth: 1,
   },
   item_body_graph: {
     //backgroundColor: '#C0DDF6',
     marginVertical: 20,
     marginHorizontal: 2,
-    borderColor: '#80BEF3',
-    borderWidth: 1,
+    //borderColor: '#80BEF3',
+    //borderWidth: 1,
     alignItems: 'center',
   },
 });

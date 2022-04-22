@@ -187,6 +187,7 @@ export default function ScreenInvoice({navigation}) {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    backgroundColor: '#292C33',
   },
   button: {
     width: 50,
