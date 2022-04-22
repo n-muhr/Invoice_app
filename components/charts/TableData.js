@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     backgroundColor: '#fff',
   },
-  head: {height: 40, backgroundColor: '#f1f8ff'},
+  head: {height: 40, backgroundColor: '#80BEF3'},
   wrapper: {flexDirection: 'row'},
-  title: {flex: 1, backgroundColor: '#f6f8fa'},
+  title: {flex: 1, backgroundColor: '#B4DDFF'},
   row: {
     height: 28,
   },

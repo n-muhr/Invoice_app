@@ -33,7 +33,7 @@ export default function ScreenInvoice({navigation}) {
 
   const [Invoices, setInvoices] = useState([]);
 
-  const {invoiceList} = useSelector(state => state.invoiceReducer);
+  const {currUser} = useSelector(state => state.invoiceReducer);
 
   //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) =>
@@ -109,6 +109,7 @@ export default function ScreenInvoice({navigation}) {
     getInvoice();
     if (isFocused) {
       //console.log('focus invoice list');
+      console.log(currUser);
     }
   }, [isFocused]);
 

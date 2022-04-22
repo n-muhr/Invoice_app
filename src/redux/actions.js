@@ -6,6 +6,7 @@ export const SET_CURR_INVOICE = 'SET_CURR_INVOICE';
 export const SET_INVOICES = 'SET_INVOICES';
 export const SET_PRODUCTS = 'SET_PRODUCTS';
 export const SET_COPY_INV = 'SET_COPY_INV';
+export const SET_USER = 'SET_USER';
 
 export const setCurrentClient = currClient => dispatch => {
   dispatch({
@@ -25,6 +26,13 @@ export const setCurrentInvoce = currInvoice => dispatch => {
   dispatch({
     type: SET_CURR_INVOICE,
     payload: currInvoice,
+  });
+};
+
+export const setUser = currUser => dispatch => {
+  dispatch({
+    type: SET_USER,
+    payload: currUser,
   });
 };
 

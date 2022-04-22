@@ -11,14 +11,9 @@ export default function InvoicePreview() {
   let source = {uri: ''};
   currInvoice !== undefined
     ? (source = {
-        uri:
-          'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/test' +
-          currInvoice.id +
-          '.pdf',
+        uri: 'file:///storage/emulated/0/Android/data/com.invoiceapp/files/Download/mojefaktura.pdf',
         filePath:
-          '/storage/emulated/0/Android/data/com.invoiceapp/files/Download/test' +
-          currInvoice.id +
-          '.pdf',
+          '/storage/emulated/0/Android/data/com.invoiceapp/files/Download/mojefaktura.pdf',
       })
     : (source = {
         uri: '',
@@ -34,8 +29,7 @@ export default function InvoicePreview() {
         body: '',
         isHTML: true,
         attachment: {
-          //path: '/storage/emulated/0/Download/test1.pdf',
-          uri: 'file:///storage/emulated/0/Download//test1.pdf',
+          uri: 'file:///storage/emulated/0/Download/test1.pdf',
           type: 'pdf',
           name: 'Faktura',
         },

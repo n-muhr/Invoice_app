@@ -7,8 +7,9 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
+import {createTableUser, addUser, chechUserCount} from '../database';
 
 export default function Register({navigation}) {
   const [data, setData] = useState({
@@ -63,6 +64,19 @@ export default function Register({navigation}) {
       show_confirm_password: !data.show_confirm_password,
     });
   };
+
+  const checkRegistration = async () => {
+    let n = await chechUserCount(data.email);
+    if (n === 0 && data.password === data.confirm_password) {
+      let user = {email: data.email, password: data.password};
+      await addUser(user);
+      navigation.replace('Login');
+    }
+  };
+
+  useEffect(() => {
+    createTableUser();
+  });
 
   return (
     <View style={styles.container}>
@@ -139,7 +153,7 @@ export default function Register({navigation}) {
 
         <View style={styles.button}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => checkRegistration()}
             style={[
               styles.signIn,
               {

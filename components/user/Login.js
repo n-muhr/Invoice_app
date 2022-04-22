@@ -7,8 +7,13 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
+import {createTableUser, verifyUser} from '../database';
+import {useIsFocused} from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
+import {useDispatch} from 'react-redux';
+import {setUser} from '../../src/redux/actions';
 
 export default function Login({navigation}) {
   const [data, setData] = useState({
@@ -19,6 +24,8 @@ export default function Login({navigation}) {
     isValidUser: true,
     isValidPassword: true,
   });
+
+  const dispatch = useDispatch();
 
   const emailChange = value => {
     if (value.length > 0) {
@@ -49,6 +56,31 @@ export default function Login({navigation}) {
       show_password: !data.show_password,
     });
   };
+
+  const login = async () => {
+    if (data.email.length === 0 || data.password.length === 0) return;
+    const user = {email: data.email, password: data.password};
+    let found = await verifyUser(user);
+    if (found.id !== -1) {
+      console.log('Exist');
+      dispatch(setUser(found));
+      navigation.replace('Moje faktury');
+    } else {
+      console.log('Not exist');
+      setData({
+        ...data,
+        isValidPassword: false,
+      });
+    }
+  };
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      createTableUser();
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -98,10 +130,15 @@ export default function Login({navigation}) {
             />
           </TouchableOpacity>
         </View>
+        {data.isValidPassword ? null : (
+          <Animatable.View animation="fadeInLeft" duration={500}>
+            <Text style={styles.errorMsg}>Špatné heslo</Text>
+          </Animatable.View>
+        )}
 
         <View style={styles.button}>
           <TouchableOpacity
-            onPress={() => navigation.replace('Moje faktury')}
+            onPress={() => login()}
             style={[
               styles.signIn,
               {

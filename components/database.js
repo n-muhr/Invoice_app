@@ -344,3 +344,71 @@ export async function countInvoice() {
     console.error(err);
   }
 }
+
+//vytvoreni table invoice pokud neexistuje
+export function createTableUser() {
+  db.transaction(txn => {
+    txn.executeSql(
+      'Create table if not exists account(id INTEGER PRIMARY KEY AUTOINCREMENT, email VARCHAR(30), password VARCHAR(30))',
+    );
+  });
+}
+
+export async function addUser(user) {
+  db.transaction(tx => {
+    tx.executeSql('insert into account(email,password) values (?,?)', [
+      user.email,
+      user.password,
+    ]);
+  });
+}
+
+export async function verifyUser(user) {
+  try {
+    let selectQuery = await ExecuteQuery(
+      'select id, email, password from account',
+      [],
+    );
+    let result = {id: -1, email: ''};
+    var rows = selectQuery.rows;
+    if (rows.length === 0) {
+      console.log('prazdno');
+      return result;
+    }
+
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      //console.log(item);
+      if (item.email === user.email && item.password === user.password) {
+        result.id = item.id;
+        result.email = item.email;
+        return result;
+      }
+    }
+
+    return result;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function chechUserCount(email) {
+  try {
+    let count = 0;
+    let selectQuery = await ExecuteQuery(
+      'select count(*) from account where email = ?',
+      [email],
+    );
+
+    var rows = selectQuery.rows;
+
+    var rows = selectQuery.rows;
+    let item = rows.item(0);
+    count = item['count(*)'];
+    console.log(count);
+
+    return count;
+  } catch (err) {
+    console.error(err);
+  }
+}

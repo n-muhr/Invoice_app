@@ -153,7 +153,7 @@ export default function Invoice({navigation}) {
   };
 
   const createPDF = async () => {
-    let name = 'test' + currInvoice.id;
+    let name = 'mojefaktura';
     let options = {
       html: await pdfContent(currInvoice),
       fileName: name,

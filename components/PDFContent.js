@@ -215,7 +215,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 <table class="meta">
                 <tr>
                   <th><span>${name} #</span></th>
-                  <td><span>${item.id}</span></td>
+                  <td><span>${item.invoice_number}</span></td>
                 </tr>
                 <tr>
                   <th><span>Datum vystavení</span></th>

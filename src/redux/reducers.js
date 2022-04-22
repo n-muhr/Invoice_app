@@ -7,6 +7,7 @@ import {
   SET_INVOICES,
   SET_PRODUCTS,
   SET_COPY_INV,
+  SET_USER,
 } from './actions';
 
 const initialStateClient = {
@@ -61,6 +62,7 @@ const initialStateInvoice = {
   },
   invoiceList: [],
   invoiceCopy: -1,
+  currUser: {id: -1, email: ''},
 };
 
 const initialStateProduct = {
@@ -111,6 +113,8 @@ export const invoiceReducer = (state = initialStateInvoice, action) => {
       return {...state, invoiceList: action.payload};
     case SET_COPY_INV:
       return {...state, invoiceCopy: action.payload};
+    case SET_USER:
+      return {...state, currUser: action.payload};
     default:
       return state;
   }
