@@ -13,13 +13,31 @@ import {createTableUser, addUser, chechUserCount} from '../database';
 
 export default function Register({navigation}) {
   const [data, setData] = useState({
+    name: '',
     email: '',
     password: '',
     confirm_password: '',
     check_Email: false,
+    check_name: false,
     show_password: true,
     show_confirm_password: true,
   });
+
+  const nameChange = value => {
+    if (value.length > 0) {
+      setData({
+        ...data,
+        name: value,
+        check_name: true,
+      });
+    } else {
+      setData({
+        ...data,
+        name: value,
+        check_name: false,
+      });
+    }
+  };
 
   const emailChange = value => {
     if (value.length > 0) {
@@ -67,8 +85,12 @@ export default function Register({navigation}) {
 
   const checkRegistration = async () => {
     let n = await chechUserCount(data.email);
-    if (n === 0 && data.password === data.confirm_password) {
-      let user = {email: data.email, password: data.password};
+    if (
+      n === 0 &&
+      data.password === data.confirm_password &&
+      data.name.length > 0
+    ) {
+      let user = {email: data.email, name: data.name, password: data.password};
       await addUser(user);
       navigation.replace('Login');
     }
@@ -84,7 +106,28 @@ export default function Register({navigation}) {
         <Text style={styles.text_header}>Registrace</Text>
       </View>
       <View style={styles.footer}>
-        <Text style={styles.text_footer}>Email</Text>
+        <Text style={styles.text_footer}>Jméno</Text>
+        <View style={styles.action}>
+          <FontAwesome
+            icon={SolidIcons.user}
+            style={{fontSize: 20, color: 'white'}}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Jméno"
+            placeholderTextColor={'grey'}
+            autoCapitalize="none"
+            onChangeText={value => nameChange(value)}
+          />
+          {data.check_Email ? (
+            <FontAwesome
+              icon={RegularIcons.checkCircle}
+              style={{fontSize: 20, color: 'green'}}
+            />
+          ) : null}
+        </View>
+
+        <Text style={[styles.text_footer, {marginTop: 20}]}>Email</Text>
         <View style={styles.action}>
           <FontAwesome
             icon={SolidIcons.user}
@@ -105,7 +148,7 @@ export default function Register({navigation}) {
           ) : null}
         </View>
 
-        <Text style={[styles.text_footer, {marginTop: 25}]}>Heslo</Text>
+        <Text style={[styles.text_footer, {marginTop: 20}]}>Heslo</Text>
         <View style={styles.action}>
           <FontAwesome
             icon={SolidIcons.lock}
@@ -127,7 +170,7 @@ export default function Register({navigation}) {
           </TouchableOpacity>
         </View>
 
-        <Text style={[styles.text_footer, {marginTop: 25}]}>
+        <Text style={[styles.text_footer, {marginTop: 20}]}>
           Potvrdit heslo
         </Text>
         <View style={styles.action}>

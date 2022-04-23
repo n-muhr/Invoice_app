@@ -32,7 +32,7 @@ export const ExecuteQuery = (sql, params = []) =>
 export function createTableProfile() {
   db.transaction(txn => {
     txn.executeSql(
-      'Create table if not exists profile(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(8), city VARCHAR(30), pays_dph BOOLEAN, ico VARCHAR(15), dic VARCHAR(15), description TEXT, account VARCHAR(15), court VARCHAR(40), section VARCHAR(2), part VARCHAR(6))',
+      'Create table if not exists profile(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(8), city VARCHAR(30), pays_dph BOOLEAN, ico VARCHAR(15), dic VARCHAR(15), description TEXT, account VARCHAR(15), court VARCHAR(40), section VARCHAR(2), part VARCHAR(6), user_id INTEGER)',
     );
   });
 }
@@ -192,7 +192,7 @@ export function createTableProduct() {
 export function createTableClient() {
   db.transaction(txn => {
     txn.executeSql(
-      'Create table if not exists client(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(10), city VARCHAR(30), ico VARCHAR(15), dic VARCHAR(15), description TEXT)',
+      'Create table if not exists client(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(10), city VARCHAR(30), ico VARCHAR(15), dic VARCHAR(15), description TEXT, user_id INTEGER)',
     );
   });
 }
@@ -201,7 +201,7 @@ export function createTableClient() {
 export function createTableInvoice() {
   db.transaction(txn => {
     txn.executeSql(
-      'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), payed decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer, note TEXT, is_storno BOOLEAN, invoice_number VARCHAR(15))',
+      'Create table if not exists invoice(id INTEGER PRIMARY KEY AUTOINCREMENT, date_of_issue VARCHAR(10), due_date VARCHAR(10), taxable_supply VARCHAR(10), payed decimal(10,5), payment_method VARCHAR(20), paid BOOLEAN, client_id integer, profile_id integer, note TEXT, is_storno BOOLEAN, invoice_number VARCHAR(15), user_id integer)',
     );
   });
 }
@@ -253,13 +253,13 @@ export async function copyProducts(id_old, id_new) {
   }
 }
 
-export async function getLastYearInvoice() {
+export async function getLastYearInvoice(id) {
   try {
     let firstDay = new Date(new Date().getFullYear(), 0, 1);
 
     let selectQuery = await ExecuteQuery(
-      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice',
-      [],
+      'select id, date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number from invoice where user_id = ?',
+      [id],
     );
     let invoices = [];
     var rows = selectQuery.rows;
@@ -349,14 +349,15 @@ export async function countInvoice() {
 export function createTableUser() {
   db.transaction(txn => {
     txn.executeSql(
-      'Create table if not exists account(id INTEGER PRIMARY KEY AUTOINCREMENT, email VARCHAR(30), password VARCHAR(30))',
+      'Create table if not exists account(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), password VARCHAR(30))',
     );
   });
 }
 
 export async function addUser(user) {
   db.transaction(tx => {
-    tx.executeSql('insert into account(email,password) values (?,?)', [
+    tx.executeSql('insert into account(name,email,password) values (?,?,?)', [
+      user.name,
       user.email,
       user.password,
     ]);
@@ -366,7 +367,7 @@ export async function addUser(user) {
 export async function verifyUser(user) {
   try {
     let selectQuery = await ExecuteQuery(
-      'select id, email, password from account',
+      'select id, name, email, password from account',
       [],
     );
     let result = {id: -1, email: ''};
@@ -378,9 +379,13 @@ export async function verifyUser(user) {
 
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
-      //console.log(item);
-      if (item.email === user.email && item.password === user.password) {
+      console.log(item);
+      if (
+        (item.email === user.email || item.name === user.email) &&
+        item.password === user.password
+      ) {
         result.id = item.id;
+        result.name = item.name;
         result.email = item.email;
         return result;
       }

@@ -35,6 +35,7 @@ export default function AddClientScreen({navigation}) {
   const [description, setDescription] = useState('');
 
   const {currClient} = useSelector(state => state.clientReducer);
+  const {currUser} = useSelector(state => state.invoiceReducer);
 
   const verifyAdd = () => {
     if (name.length == 0) {
@@ -43,7 +44,7 @@ export default function AddClientScreen({navigation}) {
       if (currClient === undefined) {
         db.transaction(tx => {
           tx.executeSql(
-            'insert into client(name, email, address, descriptive_number, city, ico, dic, description) values (?,?,?,?,?,?,?,?)',
+            'insert into client(name, email, address, descriptive_number, city, ico, dic, description, user_id) values (?,?,?,?,?,?,?,?,?)',
             [
               name,
               email,
@@ -53,6 +54,7 @@ export default function AddClientScreen({navigation}) {
               ico,
               dic,
               description,
+              currUser.id,
             ],
           );
         });

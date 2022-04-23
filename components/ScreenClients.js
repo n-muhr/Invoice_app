@@ -13,6 +13,7 @@ import {useIsFocused} from '@react-navigation/native';
 import {setCurrentClient} from '../src/redux/actions';
 import {useDispatch} from 'react-redux';
 import {createTableClient, deleteClient} from './database';
+import {useSelector} from 'react-redux';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -30,6 +31,8 @@ export default function ScreenClients({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
+
+  const {currUser} = useSelector(state => state.invoiceReducer);
 
   //funkce pro provedeni sql query
   const ExecuteQuery = (sql, params = []) =>
@@ -53,8 +56,8 @@ export default function ScreenClients({navigation}) {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, address, descriptive_number, city, ico, dic, description from client',
-      [],
+      'select id, name, email, address, descriptive_number, city, ico, dic, description from client where user_id = ?',
+      [currUser.id],
     );
 
     var rows = selectQuery.rows;
@@ -139,6 +142,7 @@ export default function ScreenClients({navigation}) {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    backgroundColor: '#292C33',
   },
   button: {
     width: 50,

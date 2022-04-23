@@ -42,6 +42,7 @@ export default function AddProfile({navigation}) {
   const [account, setAccount] = useState('');
 
   const {currProfile} = useSelector(state => state.profileReducer);
+  const {currUser} = useSelector(state => state.invoiceReducer);
 
   const verifyAdd = () => {
     if (name.length == 0) {
@@ -50,7 +51,7 @@ export default function AddProfile({navigation}) {
       if (currProfile === undefined) {
         db.transaction(tx => {
           tx.executeSql(
-            'insert into profile(name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part) values (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            'insert into profile(name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part, user_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
               name,
               email,
@@ -65,6 +66,7 @@ export default function AddProfile({navigation}) {
               court,
               section,
               part,
+              currUser.id,
             ],
           );
         });

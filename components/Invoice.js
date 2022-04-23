@@ -65,9 +65,8 @@ export default function Invoice({navigation}) {
   const [createdDate, setCreatedDate] = useState(new Date());
   const [openCreated, setOpenCreated] = useState(false);
 
-  const {invoiceClient, invoiceProfile, currInvoice, invoiceCopy} = useSelector(
-    state => state.invoiceReducer,
-  );
+  const {invoiceClient, invoiceProfile, currInvoice, invoiceCopy, currUser} =
+    useSelector(state => state.invoiceReducer);
 
   const isFocused = useIsFocused();
 
@@ -77,7 +76,7 @@ export default function Invoice({navigation}) {
     if (currInvoice === undefined || currInvoice.id === -1) {
       db.transaction(tx => {
         tx.executeSql(
-          'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number) values(?,?,?,?,?,?,?,?,?,?,?)',
+          'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number, user_id) values(?,?,?,?,?,?,?,?,?,?,?,?)',
           [
             createdDate.toLocaleDateString(),
             dueDate.toLocaleDateString(),
@@ -90,6 +89,7 @@ export default function Invoice({navigation}) {
             note,
             isStorno,
             invoiceNumber,
+            currUser.id,
           ],
         );
       });
@@ -176,6 +176,19 @@ export default function Invoice({navigation}) {
     }
   };
 
+  const getNumberUser = str => {
+    switch (str.length) {
+      case 1:
+        return '00' + str;
+      case 2:
+        return '0' + str;
+      case 3:
+        return str;
+      default:
+        return str;
+    }
+  };
+
   const setInvoice = async () => {
     if (currInvoice !== undefined) {
       if (currInvoice.id > 0) {
@@ -229,7 +242,8 @@ export default function Invoice({navigation}) {
         let date = String(new Date().getFullYear());
         n += 1;
         let str = getNumberInvoice(String(n));
-        let num = String(date + str);
+        let usr = getNumberUser(String(currUser.id));
+        let num = String(date + usr + str);
         setInvoiceNumber(num);
 
         saveInvoice();
@@ -241,7 +255,7 @@ export default function Invoice({navigation}) {
       }
     } else {
       await ExecuteQuery(
-        'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number) values(?,?,?,?,?,?,?,?,?,?,?)',
+        'insert into invoice(date_of_issue, due_date, taxable_supply, payed, payment_method, paid, client_id, profile_id, note, is_storno, invoice_number, user_id) values(?,?,?,?,?,?,?,?,?,?,?,?)',
         [
           createdDate.toLocaleDateString(),
           dueDate.toLocaleDateString(),
@@ -254,6 +268,7 @@ export default function Invoice({navigation}) {
           note,
           isStorno,
           invoiceNumber,
+          currUser.id,
         ],
       );
 
@@ -262,7 +277,8 @@ export default function Invoice({navigation}) {
       let n = await countInvoice();
       let date = String(new Date().getFullYear());
       let str = getNumberInvoice(String(n));
-      let num = String(date + str);
+      let usr = getNumberUser(String(currUser.id));
+      let num = String(date + usr + str);
       setInvoiceNumber(num);
       invoice.invoice_number = num;
 

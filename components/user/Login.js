@@ -88,7 +88,7 @@ export default function Login({navigation}) {
         <Text style={styles.text_header}>Faktury</Text>
       </View>
       <View style={styles.footer}>
-        <Text style={styles.text_footer}>Email</Text>
+        <Text style={styles.text_footer}>Jméno/Email</Text>
         <View style={styles.action}>
           <FontAwesome
             icon={SolidIcons.user}
@@ -96,7 +96,7 @@ export default function Login({navigation}) {
           />
           <TextInput
             style={styles.textInput}
-            placeholder="Email"
+            placeholder="Jméno/Email"
             placeholderTextColor={'grey'}
             autoCapitalize="none"
             onChangeText={value => emailChange(value)}

@@ -1,31 +1,15 @@
 import {StyleSheet, Text, View, Dimensions, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ProgressChart,
-  ContributionGraph,
-  StackedBarChart,
-} from 'react-native-chart-kit';
-import {
   getLastYearInvoice,
   getProducts,
   getLastThreeYearInvoice,
 } from './database';
-import {
-  Table,
-  TableWrapper,
-  Row,
-  Rows,
-  Col,
-  Cols,
-  Cell,
-} from 'react-native-table-component';
 import {useIsFocused} from '@react-navigation/native';
 import LineData from './charts/LineData';
 import TableData from './charts/TableData';
 import StackedBarData from './charts/StackedBarData';
+import {useSelector} from 'react-redux';
 
 let tableTitle = ['Celkem'];
 let tableHead = ['Měsíc', 'Vystaveno', 'Uhrazeno', 'Zbývá k uhrazení'];
@@ -69,6 +53,8 @@ const barChartConfig = {
 };
 
 export default function Stats() {
+  const {currUser} = useSelector(state => state.invoiceReducer);
+
   const [tableData, setTableData] = useState([]);
   let tableDataTest = [];
 
@@ -91,7 +77,7 @@ export default function Stats() {
 
   const getData = async () => {
     setTableData([]);
-    let data = await getLastYearInvoice();
+    let data = await getLastYearInvoice(currUser.id);
 
     for (let i = monthsNow().length; i >= 0; i--) {
       let payedM = 0;
@@ -133,8 +119,6 @@ export default function Stats() {
     tableDataTest.push(celkem);
     setTableData(tableDataTest);
 
-    //console.log('Table data: ', tableData);
-
     for (let i = 0; i < data.length; i++) {
       monthInvoiceCount(data[i].date_of_issue);
     }
@@ -172,18 +156,6 @@ export default function Stats() {
         {/* <StackedBarData /> */}
         {/* <LineData dataLine={dataLine} months={monthsNow()} /> */}
       </View>
-
-      {/* <View style={styles.item_body_graph}>
-        <Text style={styles.header}>Přijem za poslední 3 roky</Text>
-        <BarChart
-          data={barData}
-          width={Dimensions.get('window').width - 10}
-          height={260}
-          yAxisLabel="Kč"
-          chartConfig={barChartConfig}
-          verticalLabelRotation={30}
-        />
-      </View> */}
     </ScrollView>
   );
 }

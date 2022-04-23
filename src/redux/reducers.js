@@ -21,6 +21,7 @@ const initialStateClient = {
     ico: '',
     dic: '',
     description: '',
+    user_id: -1,
   },
 };
 
@@ -40,6 +41,7 @@ const initialStateProfile = {
     court: '',
     section: '',
     part: '',
+    user_id: -1,
   },
 };
 
@@ -59,10 +61,11 @@ const initialStateInvoice = {
     note: '',
     is_storno: false,
     invoice_number: '',
+    user_id: -1,
   },
   invoiceList: [],
   invoiceCopy: -1,
-  currUser: {id: -1, email: ''},
+  currUser: {id: -1, name: '', email: ''},
 };
 
 const initialStateProduct = {
