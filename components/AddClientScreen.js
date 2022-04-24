@@ -167,7 +167,7 @@ export default function AddClientScreen({navigation}) {
         <View style={styles.rows}>
           <TextInput
             value={ico}
-            onChangeText={value => setIco(value)}
+            onChangeText={value => setICO(value)}
             style={styles.inputSearch}
             placeholder="IČO"
           />

@@ -331,10 +331,13 @@ export async function getLastThreeYearInvoice() {
   }
 }
 
-export async function countInvoice() {
+export async function countInvoice(user) {
   try {
     let count = 0;
-    let selectQuery = await ExecuteQuery('select count(*) from invoice', []);
+    let selectQuery = await ExecuteQuery(
+      'select count(*) from invoice where user_id = ?',
+      [user],
+    );
 
     var rows = selectQuery.rows;
     let item = rows.item(0);

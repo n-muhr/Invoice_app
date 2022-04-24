@@ -129,7 +129,7 @@ export default function ScreenInvoice({navigation}) {
             <View style={styles.rows}>
               <View style={styles.item_body}>
                 <Text style={styles.text}>
-                  ID faktury: {item.invoice_number}
+                  Číslo faktury: {item.invoice_number}
                 </Text>
                 <Text style={styles.text}>
                   Datum vytvoření:{' '}
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 12,
   },
   text: {color: 'black', fontSize: 18, margin: 5, paddingHorizontal: 15},
 });

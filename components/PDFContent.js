@@ -17,7 +17,7 @@ const createQRC = async (iban, cost) => {
     .catch(error => console.log('Cannot create QR code', error));
 };
 
-export const pdfContent = async item => {
+export const pdfContent = async (item, currUser) => {
   const htmlStyles = `
 *{
   border: 0;
@@ -288,6 +288,9 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                 <p>${item.note}</p>
               </div>
               ${storno}
+              <div style="position: absolute; bottom: 5px; right: 5px;">
+                <p>Vystaveno uživatelem ${currUser.name}</p>
+              </div>
             </aside>
           </body>
         </html>

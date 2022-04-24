@@ -155,7 +155,7 @@ export default function Invoice({navigation}) {
   const createPDF = async () => {
     let name = 'mojefaktura';
     let options = {
-      html: await pdfContent(currInvoice),
+      html: await pdfContent(currInvoice, currUser),
       fileName: name,
       directory: 'Download',
     };
@@ -238,7 +238,7 @@ export default function Invoice({navigation}) {
         setTaxableDate(new Date(currInvoice.taxable_supply));
         setCreatedDate(new Date(currInvoice.date_of_issue));
 
-        let n = await countInvoice();
+        let n = await countInvoice(currUser.id);
         let date = String(new Date().getFullYear());
         n += 1;
         let str = getNumberInvoice(String(n));
@@ -274,7 +274,7 @@ export default function Invoice({navigation}) {
 
       let invoice = await getLastInvoice();
       console.log('New Invoice');
-      let n = await countInvoice();
+      let n = await countInvoice(currUser.id);
       let date = String(new Date().getFullYear());
       let str = getNumberInvoice(String(n));
       let usr = getNumberUser(String(currUser.id));
@@ -388,8 +388,8 @@ export default function Invoice({navigation}) {
                 onValueChange={() => {
                   setIsPaid(previousState => !previousState);
                 }}
-                trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isPaid ? '#f5dd4b' : '#f4f3f4'}
+                trackColor={{false: '#aaa', true: '#3e3e3e'}}
+                thumbColor={isPaid ? '#4aafff' : '#f4f3f4'}
                 ios_backgroundColor="#3e3e3e"
               />
             </View>
@@ -557,6 +557,7 @@ export default function Invoice({navigation}) {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    backgroundColor: '#292C33',
   },
   rows: {
     flexDirection: 'row',
@@ -568,14 +569,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   text: {
-    color: '#000',
+    color: '#fff',
     fontSize: 18,
   },
   text_cost: {
     right: 0,
     position: 'absolute',
     paddingHorizontal: 10,
-    color: '#000',
+    color: '#fff',
     fontSize: 16,
   },
   button: {

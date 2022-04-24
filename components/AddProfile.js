@@ -74,7 +74,7 @@ export default function AddProfile({navigation}) {
       } else {
         db.transaction(tx => {
           tx.executeSql(
-            'update profile set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, pays_dph = ?, ico = ?, dic = ?, description = ?, account =?, court = ?, section = ?, part = ? where id = ?',
+            'update profile set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, pays_dph = ?, ico = ?, dic = ?, description = ?, account = ?, court = ?, section = ?, part = ? where id = ?',
             [
               name,
               email,
@@ -113,6 +113,10 @@ export default function AddProfile({navigation}) {
       setIco(currProfile.ico);
       setDic(currProfile.dic);
       setDescription(currProfile.description);
+      setAccount(currProfile.account);
+      setCourt(currProfile.court);
+      setSection(currProfile.section);
+      setPart(currProfile.part);
     }
   };
 
