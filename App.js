@@ -21,12 +21,26 @@ import {Provider} from 'react-redux';
 import {Store} from './src/redux/rootReducer';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 //import BottomTabBar from './components/navigation/BottomTabBar';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 const Tab = createMaterialBottomTabNavigator();
 
 function BottomTabBar() {
   return (
     <Tab.Navigator
+      /* screenOptions={{
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 20,
+          left: 15,
+          right: 15,
+          elevation: 0,
+          backgroundColor: '#fff',
+          borderRadius: 15,
+          height: 70,
+        },
+      }} */
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, size, color}) => {
           let iconName;

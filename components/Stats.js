@@ -8,7 +8,7 @@ import {
 import {useIsFocused} from '@react-navigation/native';
 import LineData from './charts/LineData';
 import TableData from './charts/TableData';
-import StackedBarData from './charts/StackedBarData';
+import BarData from './charts/BarData';
 import {useSelector} from 'react-redux';
 
 let tableTitle = ['Celkem'];
@@ -28,30 +28,6 @@ let months = [
   'Prosinec',
 ];
 
-let barData = {
-  labels: months,
-  datasets: [
-    {
-      data: [20, 45, 28, 80, 99, 43, 20, 45, 28, 80, 99, 43],
-    },
-  ],
-};
-
-const barChartConfig = {
-  backgroundGradientFrom: '#fff',
-  backgroundGradientFromOpacity: 0,
-  backgroundGradientTo: '#fff',
-  backgroundGradientToOpacity: 0.5,
-
-  color: (opacity = 1) => `#023047`,
-  labelColor: (opacity = 1) => `#333`,
-  strokeWidth: 2,
-
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false,
-  decimalPlaces: 0,
-};
-
 export default function Stats() {
   const {currUser} = useSelector(state => state.invoiceReducer);
 
@@ -59,6 +35,7 @@ export default function Stats() {
   let tableDataTest = [];
 
   const [dataLine, setDataLine] = useState([]);
+  const [dataBar, setDataBar] = useState([]);
 
   const monthsNow = () => {
     let m = [];
@@ -69,6 +46,7 @@ export default function Stats() {
   };
 
   let resultLine = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  let resultBar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
   const monthInvoiceCount = num => {
     const date = new Date(num);
@@ -97,6 +75,8 @@ export default function Stats() {
             if (data[j].paid) {
               payedM += total_prod;
             }
+
+            resultBar[new Date(data[j].date_of_issue).getMonth()] += total_prod;
           }
           if (!data[j].paid) payedM += data[j].payed;
         }
@@ -125,6 +105,7 @@ export default function Stats() {
 
     let n = monthsNow().length;
     setDataLine(resultLine.slice(0, n));
+    setDataBar(resultBar.slice(0, n));
   };
 
   const isFocused = useIsFocused();
@@ -147,13 +128,13 @@ export default function Stats() {
           tableHead={tableHead}
           tableData={tableData}
         />
+        <BarData barData={dataBar} barLabels={monthsNow()} />
       </View>
 
       <View style={styles.item_body_graph}>
         <Text style={styles.header}>
           Vydaných faktur za rok {new Date().getFullYear()}
         </Text>
-        {/* <StackedBarData /> */}
         {/* <LineData dataLine={dataLine} months={monthsNow()} /> */}
       </View>
     </ScrollView>

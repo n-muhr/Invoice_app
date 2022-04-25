@@ -216,7 +216,7 @@ export async function getProducts(id) {
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
-      console.log(item);
+      //console.log(item);
       let product = {
         id: item.id,
         invoice_id: item.invoice_id,
@@ -376,13 +376,12 @@ export async function verifyUser(user) {
     let result = {id: -1, email: ''};
     var rows = selectQuery.rows;
     if (rows.length === 0) {
-      console.log('prazdno');
       return result;
     }
 
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
-      console.log(item);
+      //console.log(item);
       if (
         (item.email === user.email || item.name === user.email) &&
         item.password === user.password
@@ -413,7 +412,7 @@ export async function chechUserCount(email) {
     var rows = selectQuery.rows;
     let item = rows.item(0);
     count = item['count(*)'];
-    console.log(count);
+    //console.log(count);
 
     return count;
   } catch (err) {
