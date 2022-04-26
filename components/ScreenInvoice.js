@@ -223,5 +223,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  text: {color: 'black', fontSize: 18, margin: 5, paddingHorizontal: 15},
+  text: {color: 'black', fontSize: 18, margin: 5, paddingHorizontal: 10},
 });

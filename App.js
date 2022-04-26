@@ -10,6 +10,7 @@ import InvoicePreview from './components/InvoicePreview';
 import ScreenProfile from './components/ScreenProfile';
 import Stats from './components/Stats';
 import Login from './components/user/Login';
+import Contacts from './components/Contacts';
 import Register from './components/user/Register';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
@@ -48,11 +49,16 @@ function BottomTabBar() {
             iconName = SolidIcons.fileInvoice;
             size = focused ? 25 : 20;
             color = focused ? '#00F' : '#333';
-          } else if (route.name === 'Stats') {
+          } else if (route.name === 'Statistika') {
             iconName = SolidIcons.chartBar;
             size = focused ? 25 : 20;
             color = focused ? '#00f' : '#333';
-          } else if (route.name === 'Klienti') {
+          } else if (route.name === 'Kontakty') {
+            iconName = SolidIcons.user;
+            size = focused ? 25 : 20;
+            color = focused ? '#00f' : '#333';
+          }
+          /* else if (route.name === 'Klienti') {
             iconName = SolidIcons.user;
             size = focused ? 25 : 20;
             color = focused ? '#00f' : '#333';
@@ -60,7 +66,7 @@ function BottomTabBar() {
             iconName = SolidIcons.user;
             size = focused ? 25 : 20;
             color = focused ? '#00f' : '#333';
-          }
+          } */
 
           return (
             <FontAwesome
@@ -75,9 +81,10 @@ function BottomTabBar() {
       })}
       barStyle={{backgroundColor: '#FF8C00'}}>
       <Tab.Screen name="Faktury" component={ScreenInvoice} />
-      <Tab.Screen name="Stats" component={Stats} />
-      <Tab.Screen name="Klienti" component={ScreenClients} />
-      <Tab.Screen name="Profily" component={ScreenProfile} />
+      <Tab.Screen name="Statistika" component={Stats} />
+      <Tab.Screen name="Kontakty" component={Contacts} />
+      {/* <Tab.Screen name="Klienti" component={ScreenClients} />
+      <Tab.Screen name="Profily" component={ScreenProfile} /> */}
     </Tab.Navigator>
   );
 }

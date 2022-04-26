@@ -43,8 +43,9 @@ export default function ProductList() {
         dph: Number(dph),
       };
       let newProducts = [...products, product];
-      setProducts(newProducts);
+      //setProducts(newProducts);
       addProductDatabase(product);
+      getProducts();
     } else {
       console.log('wrong data');
     }
@@ -90,14 +91,14 @@ export default function ProductList() {
     <View style={styles.body}>
       <FlatList
         data={products}
-        style={{flexGrow: 0, maxHeight: '50%'}}
+        style={{flexGrow: 0, maxHeight: '60%'}}
         renderItem={({item}) => (
           <View style={styles.item}>
-            <Text>Popis: {item.description}</Text>
-            <View style={styles.row}>
-              <Text>Cena: {item.price}</Text>
-              <Text>Množství: {item.quantity}</Text>
-              <Text>DPH: {item.dph}%</Text>
+            <Text style={styles.text}>Popis: {item.description}</Text>
+            <View style={styles.rows}>
+              <Text style={styles.text}>Cena: {item.price}</Text>
+              <Text style={styles.text}>Množství: {item.quantity}</Text>
+              <Text style={styles.text}>DPH: {item.dph}%</Text>
             </View>
             <Pressable
               onPress={() => {
@@ -119,6 +120,7 @@ export default function ProductList() {
           onChangeText={value => setDescription(value)}
           style={styles.input_desc}
           placeholder="Popis produktu"
+          placeholderTextColor={'grey'}
         />
         <View style={styles.rows}>
           <TextInput
@@ -127,6 +129,7 @@ export default function ProductList() {
             onChangeText={value => setPrice(value)}
             style={styles.input}
             placeholder="Cena za ks"
+            placeholderTextColor={'grey'}
           />
           <TextInput
             value={quantity}
@@ -134,10 +137,11 @@ export default function ProductList() {
             onChangeText={value => setQuantity(value)}
             style={styles.input}
             placeholder="Množství"
+            placeholderTextColor={'grey'}
           />
           <Picker
             selectedValue={dph}
-            style={{height: 50, width: '33%', backgroundColor: '#dddddd'}}
+            style={{height: 20, width: '33%', backgroundColor: '#dddddd'}}
             onValueChange={(itemValue, itemIndex) => setDPH(itemValue)}>
             <Picker.Item label="21%" value="21" />
             <Picker.Item label="15%" value="15" />
@@ -162,7 +166,7 @@ export default function ProductList() {
 }
 
 const styles = StyleSheet.create({
-  body: {flex: 1},
+  body: {flex: 1, backgroundColor: '#292C33'},
   rows: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -179,9 +183,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     maxHeight: '80%',
   },
-  input_desc: {},
+  input_desc: {borderBottomWidth: 1, color: '#fff', margin: 5},
   input: {
     width: '25%',
+    color: '#fff',
     marginHorizontal: 15,
     borderBottomWidth: 1,
   },
@@ -198,4 +203,5 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: 'center',
   },
+  text: {color: '#ffffff', marginHorizontal: 10, marginVertical: 5},
 });

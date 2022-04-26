@@ -171,7 +171,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
       new Date(item.taxable_supply).toLocaleDateString() +
       '</span></td></tr>'
     : '';
-  let name = profile.pays_dph ? 'Faktura/Daňový doklad' : 'Faktura';
+  let name = profile.pays_dph ? 'Faktura - Daňový doklad' : 'Faktura';
   let qrcode = '';
   if (item.payment_method !== 'Hotovost') {
     await createQRC(profile.account, total_cost - payed);

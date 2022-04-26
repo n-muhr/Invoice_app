@@ -55,6 +55,9 @@ export default function Stats() {
 
   const getData = async () => {
     setTableData([]);
+    setDataBar([]);
+    resultLine = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    resultBar = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let data = await getLastYearInvoice(currUser.id);
 
     for (let i = monthsNow().length; i >= 0; i--) {
@@ -63,6 +66,7 @@ export default function Stats() {
       let totalM = 0;
       let was_found = false;
       for (let j = 0; j < data.length; j++) {
+        if (data[j].is_storno === 1) continue;
         if (new Date(data[j].date_of_issue).getMonth() === i) {
           was_found = true;
           if (!tableTitle.includes(months[i])) tableTitle.unshift(months[i]);
@@ -133,7 +137,7 @@ export default function Stats() {
 
       <View style={styles.item_body_graph}>
         <Text style={styles.header}>
-          Vydaných faktur za rok {new Date().getFullYear()}
+          Počet vydaných faktur za rok {new Date().getFullYear()}
         </Text>
         {/* <LineData dataLine={dataLine} months={monthsNow()} /> */}
       </View>

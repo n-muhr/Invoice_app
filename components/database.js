@@ -241,6 +241,7 @@ export async function copyProducts(id_old, id_new) {
       [id_old],
     );
     var rows = selectQuery.rows;
+    console.log(rows);
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
       await ExecuteQuery(
