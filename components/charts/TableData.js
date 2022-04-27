@@ -15,11 +15,26 @@ export default function TableData({tableHead, tableTitle, tableData}) {
     <View>
       <View style={styles.container}>
         <Table borderStyle={{borderWidth: 1}}>
-          <Row data={tableHead} flexArr={[1, 1, 1, 1]} style={styles.head} />
+          <Row
+            data={tableHead}
+            flexArr={[1, 1, 1, 1]}
+            style={styles.head}
+            textStyle={styles.big_text}
+          />
           {/* Řádky s daty */}
           <TableWrapper style={styles.wrapper}>
-            <Col data={tableTitle} style={styles.title} heightArr={[28, 28]} />
-            <Rows data={tableData} flexArr={[1, 1, 1]} style={styles.row} />
+            <Col
+              data={tableTitle}
+              style={styles.title}
+              heightArr={[28, 28]}
+              textStyle={styles.big_text}
+            />
+            <Rows
+              data={tableData}
+              flexArr={[1, 1, 1]}
+              style={styles.row}
+              textStyle={styles.text}
+            />
           </TableWrapper>
         </Table>
       </View>
@@ -40,7 +55,8 @@ const styles = StyleSheet.create({
   row: {
     height: 28,
   },
-  text: {textAlign: 'center'},
+  text: {textAlign: 'center', fontSize: 16},
+  big_text: {textAlign: 'center', fontSize: 16, fontWeight: 'bold'},
   header: {
     textAlign: 'center',
     fontSize: 20,

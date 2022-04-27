@@ -420,3 +420,70 @@ export async function chechUserCount(email) {
     console.error(err);
   }
 }
+
+export async function getInvoiceDay(id) {
+  try {
+    let today = new Date();
+
+    let selectQuery = await ExecuteQuery(
+      'select id, date_of_issue, client_id, profile_id, is_storno, invoice_number from invoice where user_id = ?',
+      [id],
+    );
+    let invoices = [];
+    var rows = selectQuery.rows;
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      if (item.is_storno === 1) continue;
+      if (new Date(item.date_of_issue).toDateString() !== today.toDateString())
+        continue;
+
+      let invoice = {
+        id: item.id,
+        date_of_issue: item.date_of_issue,
+        client_id: item.client_id,
+        profile_id: item.profile_id,
+        invoice_number: item.invoice_number,
+      };
+      invoices = [...invoices, invoice];
+    }
+
+    return invoices;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getInvoiceMonth(id) {
+  try {
+    let today = new Date();
+
+    let selectQuery = await ExecuteQuery(
+      'select id, date_of_issue, client_id, profile_id, is_storno, invoice_number from invoice where user_id = ?',
+      [id],
+    );
+    let invoices = [];
+    var rows = selectQuery.rows;
+    for (let i = 0; i < rows.length; i++) {
+      let item = rows.item(i);
+      if (item.is_storno === 1) continue;
+      if (
+        new Date(item.date_of_issue).getMonth() !== today.getMonth() ||
+        new Date(item.date_of_issue).getFullYear() !== today.getFullYear()
+      )
+        continue;
+
+      let invoice = {
+        id: item.id,
+        date_of_issue: item.date_of_issue,
+        client_id: item.client_id,
+        profile_id: item.profile_id,
+        invoice_number: item.invoice_number,
+      };
+      invoices = [...invoices, invoice];
+    }
+
+    return invoices;
+  } catch (err) {
+    console.error(err);
+  }
+}

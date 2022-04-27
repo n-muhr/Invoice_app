@@ -24,7 +24,7 @@ export default function BarData({barData, barLabels}) {
 
     barPercentage: 0.8,
     useShadowColorFromDataset: false,
-    decimalPlaces: 1,
+    decimalPlaces: 2,
   };
 
   return (
@@ -34,7 +34,7 @@ export default function BarData({barData, barLabels}) {
         data={data}
         width={Dimensions.get('window').width - 10}
         height={260}
-        yAxisLabel="KČ"
+        yAxisLabel=""
         chartConfig={chartConfig}
         verticalLabelRotation={0}
       />

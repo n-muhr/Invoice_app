@@ -154,7 +154,7 @@ export default function Login({navigation}) {
                   color: '#FF8C00',
                 },
               ]}>
-              Přihlásit
+              Přihlásit se
             </Text>
           </TouchableOpacity>
 
@@ -175,7 +175,7 @@ export default function Login({navigation}) {
                   color: '#FF8C00',
                 },
               ]}>
-              Registrovat
+              Registrovat se
             </Text>
           </TouchableOpacity>
         </View>

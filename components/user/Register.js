@@ -233,7 +233,7 @@ export default function Register({navigation}) {
                   color: '#FF8C00',
                 },
               ]}>
-              Přihlásit
+              Přihlásit se
             </Text>
           </TouchableOpacity>
         </View>

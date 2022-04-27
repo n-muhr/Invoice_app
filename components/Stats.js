@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, Dimensions, ScrollView} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  ScrollView,
+  Pressable,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   getLastYearInvoice,
@@ -10,6 +17,8 @@ import LineData from './charts/LineData';
 import TableData from './charts/TableData';
 import BarData from './charts/BarData';
 import {useSelector} from 'react-redux';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import {ReportPDF} from './pdf/ReportPDF';
 
 let tableTitle = ['Celkem'];
 let tableHead = ['Měsíc', 'Vystaveno', 'Uhrazeno', 'Zbývá k uhrazení'];
@@ -112,6 +121,18 @@ export default function Stats() {
     setDataBar(resultBar.slice(0, n));
   };
 
+  const createReport = async choice => {
+    let name = 'report';
+    let options = {
+      html: await ReportPDF(currUser, choice),
+      fileName: name,
+      directory: 'Download',
+    };
+
+    let file = await RNHTMLtoPDF.convert(options);
+    console.log(file);
+  };
+
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -121,27 +142,55 @@ export default function Stats() {
   }, [isFocused]);
 
   return (
-    <ScrollView style={styles.body}>
-      <View style={styles.item_body}>
-        <Text style={styles.header}>
-          Rychlý přehled pro rok {new Date().getFullYear()}
-        </Text>
+    <View style={styles.body}>
+      <ScrollView style={styles.body}>
+        <View style={styles.item_body}>
+          <Text style={styles.header}>
+            Rychlý přehled pro rok {new Date().getFullYear()}
+          </Text>
 
-        <TableData
-          tableTitle={tableTitle}
-          tableHead={tableHead}
-          tableData={tableData}
-        />
-        <BarData barData={dataBar} barLabels={monthsNow()} />
-      </View>
+          <TableData
+            tableTitle={tableTitle}
+            tableHead={tableHead}
+            tableData={tableData}
+          />
+          <BarData barData={dataBar} barLabels={monthsNow()} />
+        </View>
 
-      <View style={styles.item_body_graph}>
-        <Text style={styles.header}>
-          Počet vydaných faktur za rok {new Date().getFullYear()}
-        </Text>
-        {/* <LineData dataLine={dataLine} months={monthsNow()} /> */}
-      </View>
-    </ScrollView>
+        <View style={[styles.item_body_graph, {paddingBottom: 50}]}>
+          <Text style={styles.header}>
+            Počet vydaných faktur za rok {new Date().getFullYear()}
+          </Text>
+          <LineData dataLine={dataLine} months={monthsNow()} />
+        </View>
+      </ScrollView>
+
+      <Pressable
+        onPress={async () => {
+          console.log('vypis dne');
+          await createReport(1);
+        }}
+        android_ripple={{color: '#00000050'}}
+        style={({pressed}) => [
+          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
+          styles.button_month,
+        ]}>
+        <Text style={styles.buttonText}>Výpis za den</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={async () => {
+          console.log('vypis mesice');
+          await createReport(2);
+        }}
+        android_ripple={{color: '#00000050'}}
+        style={({pressed}) => [
+          {backgroundColor: pressed ? '#dddddd' : '#3988d7'},
+          styles.button,
+        ]}>
+        <Text style={styles.buttonText}>Výpis za měsíc</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -181,5 +230,31 @@ const styles = StyleSheet.create({
     //borderColor: '#80BEF3',
     //borderWidth: 1,
     alignItems: 'center',
+  },
+  button: {
+    width: '45%',
+    height: 50,
+    alignItems: 'center',
+    borderRadius: 5,
+    margin: 10,
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 20,
+    margin: 10,
+    textAlign: 'center',
+  },
+  button_month: {
+    width: '45%',
+    height: 50,
+    alignItems: 'center',
+    borderRadius: 5,
+    margin: 10,
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
   },
 });
