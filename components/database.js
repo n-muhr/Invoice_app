@@ -32,7 +32,7 @@ export const ExecuteQuery = (sql, params = []) =>
 export function createTableProfile() {
   db.transaction(txn => {
     txn.executeSql(
-      'Create table if not exists profile(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(8), city VARCHAR(30), pays_dph BOOLEAN, ico VARCHAR(15), dic VARCHAR(15), description TEXT, account VARCHAR(15), court VARCHAR(40), section VARCHAR(2), part VARCHAR(6), user_id INTEGER)',
+      'Create table if not exists profile(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(30), email VARCHAR(30), address VARCHAR(30), descriptive_number VARCHAR(8), city VARCHAR(30), pays_dph BOOLEAN, ico VARCHAR(15), dic VARCHAR(15), description TEXT, account VARCHAR(15), iban VARCHAR(6), var_symbol VARCHAR(6), court VARCHAR(40), section VARCHAR(2), part VARCHAR(6), user_id INTEGER)',
     );
   });
 }
@@ -40,7 +40,7 @@ export function createTableProfile() {
 //asynchronni funkce pro nacteni klientu z tabulky clients z databaze
 export async function getProfile(id) {
   let selectQuery = await ExecuteQuery(
-    'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part from profile where id = ?',
+    'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, iban, var_symbol, court, section, part from profile where id = ?',
     [id],
   );
 
@@ -58,6 +58,8 @@ export async function getProfile(id) {
     dic: item.dic,
     description: item.description,
     account: item.account,
+    iban: item.iban,
+    var_symbol: item.var_symbol,
     court: item.court,
     section: item.section,
     part: item.part,
@@ -146,10 +148,7 @@ export async function getLastInvoice() {
 
 export function updateProfileAccount(id, new_account) {
   db.transaction(tx => {
-    tx.executeSql('update profile set account =? where id = ?', [
-      new_account,
-      id,
-    ]);
+    tx.executeSql('update profile set iban =? where id = ?', [new_account, id]);
   });
 }
 

@@ -4,9 +4,10 @@ import Pdf from 'react-native-pdf';
 import {useSelector} from 'react-redux';
 import RNPrint from 'react-native-print';
 import Mailer from 'react-native-mail';
+import {getProfile} from './database';
 
 export default function InvoicePreview() {
-  const {currInvoice} = useSelector(state => state.invoiceReducer);
+  const {currInvoice, currUser} = useSelector(state => state.invoiceReducer);
 
   let source = {uri: ''};
   currInvoice !== undefined
@@ -19,11 +20,15 @@ export default function InvoicePreview() {
         uri: '',
       });
 
-  const handleEmail = () => {
+  const handleEmail = async () => {
+    let profile = await getProfile(currInvoice.profile_id);
+    console.log(profile);
+    let send_to = profile.email.length > 0 ? profile.email.toString() : '';
+    let subject = 'Faktura od uživatele ' + currUser.name;
     Mailer.mail(
       {
-        subject: 'Send help',
-        recipients: [''],
+        subject: subject,
+        recipients: [send_to],
         ccRecipients: [],
         bccRecipients: [],
         body: '',

@@ -208,6 +208,7 @@ export default function AddClientScreen({navigation}) {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    backgroundColor: '#292C33',
   },
   input: {
     width: '95%',

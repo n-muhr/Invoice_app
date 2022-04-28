@@ -121,19 +121,24 @@ table.inventory td:nth-child(5) { text-align: right; width: 12%; }
       '</span><span data-prefix> Kč</span></td>';
     reportTable = reportTable + '</tr>';
   }
+  let date = new Date();
+  let title =
+    choice === 1
+      ? 'Report za den ' + date.toLocaleDateString()
+      : 'Report za tento měsíc';
 
   const htmlContent = `
         <html>
           <head>
             <meta charset="utf-8">
-            <title>Faktura</title>
+            <title>Report</title>
             <style>
               ${htmlStyles}
             </style>
           </head>
           <body>
             <header>
-              <h1>Report</h1>
+              <h1>${title}</h1>
             </header>
             <article>
               <h1>Report</h1>

@@ -27,7 +27,7 @@ import {
 } from './database';
 import {Picker} from '@react-native-picker/picker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import {pdfContent} from './PDFContent';
+import {pdfContent} from './pdf/PDFContent';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -195,7 +195,7 @@ export default function Invoice({navigation}) {
         if (currInvoice.profile_id !== '') {
           let profile = await getProfile(currInvoice.profile_id);
           setProfileName(profile.name);
-          setAccount(profile.account);
+          setAccount(profile.iban);
         }
 
         setProfile(currInvoice.profile_id);
@@ -219,7 +219,7 @@ export default function Invoice({navigation}) {
         if (currInvoice.profile_id !== '') {
           let profile = await getProfile(currInvoice.profile_id);
           setProfileName(profile.name);
-          setAccount(profile.account);
+          setAccount(profile.iban);
         }
 
         setProfile(currInvoice.profile_id);

@@ -56,7 +56,7 @@ export default function ScreenProfile({navigation}) {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part from profile where user_id = ?',
+      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, iban, var_symbol, court, section, part from profile where user_id = ?',
       [currUser.id],
     );
 
@@ -76,6 +76,8 @@ export default function ScreenProfile({navigation}) {
         dic: item.dic,
         description: item.description,
         account: item.account,
+        iban: item.iban,
+        var_symbol: item.var_symbol,
         court: item.court,
         section: item.section,
         part: item.part,

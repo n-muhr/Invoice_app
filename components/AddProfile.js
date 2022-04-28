@@ -40,6 +40,8 @@ export default function AddProfile({navigation}) {
   const [part, setPart] = useState('');
   const [court, setCourt] = useState('');
   const [account, setAccount] = useState('');
+  const [iban, setIBAN] = useState('');
+  const [var_symbol, setVarSymbol] = useState('');
 
   const {currProfile} = useSelector(state => state.profileReducer);
   const {currUser} = useSelector(state => state.invoiceReducer);
@@ -51,7 +53,7 @@ export default function AddProfile({navigation}) {
       if (currProfile === undefined) {
         db.transaction(tx => {
           tx.executeSql(
-            'insert into profile(name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, court, section, part, user_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            'insert into profile(name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, iban, var_symbol, court, section, part, user_id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [
               name,
               email,
@@ -63,6 +65,8 @@ export default function AddProfile({navigation}) {
               dic,
               description,
               account,
+              iban,
+              var_symbol,
               court,
               section,
               part,
@@ -74,7 +78,7 @@ export default function AddProfile({navigation}) {
       } else {
         db.transaction(tx => {
           tx.executeSql(
-            'update profile set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, pays_dph = ?, ico = ?, dic = ?, description = ?, account = ?, court = ?, section = ?, part = ? where id = ?',
+            'update profile set name = ?, email = ?, address = ?, descriptive_number = ?, city = ?, pays_dph = ?, ico = ?, dic = ?, description = ?, account = ?, iban = ?, var_symbol = ?, court = ?, section = ?, part = ? where id = ?',
             [
               name,
               email,
@@ -86,6 +90,8 @@ export default function AddProfile({navigation}) {
               dic,
               description,
               account,
+              iban,
+              var_symbol,
               court,
               section,
               part,
@@ -103,7 +109,7 @@ export default function AddProfile({navigation}) {
   const setProfile = () => {
     if (currProfile === undefined) console.log('New profile.');
     else {
-      console.log('Profil: ' + currProfile.id);
+      console.log('Profil: ' + currProfile.iban);
       setName(currProfile.name);
       setEmail(currProfile.email);
       setAddress(currProfile.address);
@@ -114,6 +120,8 @@ export default function AddProfile({navigation}) {
       setDic(currProfile.dic);
       setDescription(currProfile.description);
       setAccount(currProfile.account);
+      setIBAN(currProfile.iban);
+      setVarSymbol(currProfile.var_symbol);
       setCourt(currProfile.court);
       setSection(currProfile.section);
       setPart(currProfile.part);
@@ -176,30 +184,35 @@ export default function AddProfile({navigation}) {
           onChangeText={value => setName(value)}
           style={styles.input}
           placeholder="Název/Jméno"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={email}
           onChangeText={value => setEmail(value)}
           style={styles.input}
           placeholder="Email"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={address}
           onChangeText={value => setAddress(value)}
           style={styles.input}
           placeholder="Ulice"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={descriptive_number}
           onChangeText={value => setDesNum(value)}
           style={styles.input}
           placeholder="PSC"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={city}
           onChangeText={value => setCity(value)}
           style={styles.input}
           placeholder="Město"
+          placeholderTextColor={'grey'}
         />
         <View style={styles.rows}>
           <Text style={styles.text}>Plátce dph</Text>
@@ -219,6 +232,7 @@ export default function AddProfile({navigation}) {
             onChangeText={value => setIco(value)}
             style={styles.inputSearch}
             placeholder="IČO"
+            placeholderTextColor={'grey'}
           />
           <Pressable
             onPress={getInfo}
@@ -238,11 +252,13 @@ export default function AddProfile({navigation}) {
           onChangeText={value => setDic(value)}
           style={styles.input}
           placeholder="DIČ"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={court}
           onChangeText={value => setCourt(value)}
           style={styles.input}
+          placeholderTextColor={'grey'}
           placeholder="Zapsán u soudu"
         />
         <TextInput
@@ -250,18 +266,35 @@ export default function AddProfile({navigation}) {
           onChangeText={value => setSection(value)}
           style={styles.input}
           placeholder="Oddíl"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={part}
           onChangeText={value => setPart(value)}
           style={styles.input}
           placeholder="Složka"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={account}
           onChangeText={value => setAccount(value)}
           style={styles.input}
           placeholder="Bankovní účet"
+          placeholderTextColor={'grey'}
+        />
+        <TextInput
+          value={var_symbol}
+          onChangeText={value => setVarSymbol(value)}
+          style={styles.input}
+          placeholder="Variabilní symbol"
+          placeholderTextColor={'grey'}
+        />
+        <TextInput
+          value={iban}
+          onChangeText={value => setIBAN(value)}
+          style={styles.input}
+          placeholder="IBAN"
+          placeholderTextColor={'grey'}
         />
         <TextInput
           value={description}
@@ -269,6 +302,7 @@ export default function AddProfile({navigation}) {
           style={styles.input}
           placeholder="Poznámka"
           multiline
+          placeholderTextColor={'grey'}
         />
         <Pressable
           onPress={verifyAdd}
@@ -287,13 +321,15 @@ export default function AddProfile({navigation}) {
 const styles = StyleSheet.create({
   body: {
     flex: 1,
+    backgroundColor: '#292C33',
   },
   input: {
-    width: '95%',
-    //borderBottomWidth: 1,
-    borderColor: '#555555',
-    borderRadius: 25,
-    backgroundColor: '#ffffff',
+    width: '85%',
+    borderBottomWidth: 1,
+    borderColor: '#fff',
+    //borderRadius: 25,
+    backgroundColor: '#292C33',
+    color: '#fff',
     textAlign: 'left',
     fontSize: 20,
     margin: 10,
@@ -303,10 +339,11 @@ const styles = StyleSheet.create({
   },
   inputSearch: {
     width: '75%',
-    //borderWidth: 1,
-    borderColor: '#555555',
+    borderBottomWidth: 1,
+    borderColor: '#fff',
     borderRadius: 25,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#292C33',
+    color: '#fff',
     textAlign: 'left',
     fontSize: 20,
     margin: 10,
@@ -341,7 +378,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#000',
+    color: '#ffffff',
     paddingHorizontal: 10,
     fontSize: 20,
     margin: 5,

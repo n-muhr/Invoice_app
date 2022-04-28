@@ -19,6 +19,7 @@ import BarData from './charts/BarData';
 import {useSelector} from 'react-redux';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import {ReportPDF} from './pdf/ReportPDF';
+import RNPrint from 'react-native-print';
 
 let tableTitle = ['Celkem'];
 let tableHead = ['Měsíc', 'Vystaveno', 'Uhrazeno', 'Zbývá k uhrazení'];
@@ -161,7 +162,7 @@ export default function Stats() {
           <Text style={styles.header}>
             Počet vydaných faktur za rok {new Date().getFullYear()}
           </Text>
-          <LineData dataLine={dataLine} months={monthsNow()} />
+          {/* <LineData dataLine={dataLine} months={monthsNow()} /> */}
         </View>
       </ScrollView>
 
@@ -169,6 +170,10 @@ export default function Stats() {
         onPress={async () => {
           console.log('vypis dne');
           await createReport(1);
+          await RNPrint.print({
+            filePath:
+              '/storage/emulated/0/Android/data/com.invoiceapp/files/Download/report.pdf',
+          });
         }}
         android_ripple={{color: '#00000050'}}
         style={({pressed}) => [
@@ -182,6 +187,10 @@ export default function Stats() {
         onPress={async () => {
           console.log('vypis mesice');
           await createReport(2);
+          await RNPrint.print({
+            filePath:
+              '/storage/emulated/0/Android/data/com.invoiceapp/files/Download/report.pdf',
+          });
         }}
         android_ripple={{color: '#00000050'}}
         style={({pressed}) => [

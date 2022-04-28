@@ -38,6 +38,8 @@ const initialStateProfile = {
     pays_dph: false,
     city: '',
     account: '',
+    iban: '',
+    var_symbol: '',
     court: '',
     section: '',
     part: '',

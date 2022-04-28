@@ -1,4 +1,4 @@
-import {getProfile, getClient, getProducts} from './database';
+import {getProfile, getClient, getProducts} from '../database';
 import RNQRGenerator from 'rn-qr-generator';
 
 const createQRC = async (iban, cost) => {
@@ -149,12 +149,22 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
   let payed = 0;
   if (item.paid) payed = total_cost;
   else if (item.payed.length > 0) payed = item.payed;
-  let account =
-    item.payment_method === 'Bankovní převod'
-      ? '<th><span>Číslo účtu</span></th> <td><span>' +
-        profile.account +
-        '</span></td>'
-      : '';
+  let account = '';
+  if (item.payment_method === 'Bankovní převod') {
+    account +=
+      '<tr><th><span>Číslo účtu</span></th> <td><span>' +
+      profile.account +
+      '</span></td></tr>';
+    account +=
+      '<tr><th><span>Variabilní symbol</span></th> <td><span>' +
+      profile.var_symbol +
+      '</span></td></tr>';
+    account +=
+      '<tr><th><span>IBAN</span></th> <td><span>' +
+      profile.iban +
+      '</span></td></tr>';
+  }
+
   let nodeCourt = '';
   if (profile.court.length > 0) {
     nodeCourt = 'Zapsáno v obchodním rejstříku u ' + profile.court;
@@ -174,7 +184,7 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
   let name = profile.pays_dph ? 'Faktura - Daňový doklad' : 'Faktura';
   let qrcode = '';
   if (item.payment_method !== 'Hotovost') {
-    await createQRC(profile.account, total_cost - payed);
+    await createQRC(profile.iban, total_cost - payed);
     qrcode +=
       '<img src="file:///data/user/0/com.invoiceapp/cache/invoice_qrcode.png" style="height:150px;float:left" />';
   }
@@ -237,9 +247,8 @@ aside h1 { border-color: #999; border-bottom-style: solid; }
                   <th><span>Způsob platby</span></th>
                   <td><span>${item.payment_method}</span></td>
                 </tr>
-                <tr>
                   ${account}
-                </tr>
+
               </table>
               ${qrcode}
 
