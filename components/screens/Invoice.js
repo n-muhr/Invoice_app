@@ -15,7 +15,7 @@ import {useIsFocused} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useDispatch} from 'react-redux';
-import {setCurrentInvoce} from '../src/redux/actions';
+import {setCurrentInvoce} from '../../src/redux/actions';
 import {
   getLastInvoice,
   ExecuteQuery,
@@ -24,10 +24,10 @@ import {
   updateProfileAccount,
   countInvoice,
   copyProducts,
-} from './database';
+} from '../../src/database/database';
 import {Picker} from '@react-native-picker/picker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import {pdfContent} from './pdf/PDFContent';
+import {pdfContent} from '../pdf/PDFContent';
 
 const Tab = createMaterialTopTabNavigator();
 

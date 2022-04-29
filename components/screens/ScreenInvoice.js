@@ -7,12 +7,12 @@ import {
   setCurrentInvoce,
   setInvoices,
   setCopyInvoice,
-} from '../src/redux/actions';
+} from '../../src/redux/actions';
 import {useDispatch} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
-import {deleteInvoice, createTableInvoice} from './database';
+import {deleteInvoice, createTableInvoice} from '../../src/database/database';
 
 //otevreni databaze InvoiceDB
 const db = SQLite.openDatabase(
@@ -108,8 +108,7 @@ export default function ScreenInvoice({navigation}) {
     createTableInvoice();
     getInvoice();
     if (isFocused) {
-      //console.log('focus invoice list');
-      console.log(currUser);
+      //console.log(currUser);
     }
   }, [isFocused]);
 
@@ -154,7 +153,7 @@ export default function ScreenInvoice({navigation}) {
                 <TouchableOpacity
                   style={styles.del_button}
                   onPress={() => {
-                    console.log('Delete invoice: ', item.id);
+                    console.log('Storno invoice: ', item.id);
                     deleteInvoice(item.id);
                     getInvoice();
                   }}>

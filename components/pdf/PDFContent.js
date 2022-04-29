@@ -1,4 +1,4 @@
-import {getProfile, getClient, getProducts} from '../database';
+import {getProfile, getClient, getProducts} from '../../src/database/database';
 import RNQRGenerator from 'rn-qr-generator';
 
 const createQRC = async (iban, cost) => {

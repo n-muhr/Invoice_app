@@ -1,8 +1,8 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import ScreenClients from './ScreenClients';
-import ScreenProfile from './ScreenProfile';
+import ScreenClients from '../screens/ScreenClients';
+import ScreenProfile from '../screens/ScreenProfile';
 
 const Tab = createMaterialTopTabNavigator();
 

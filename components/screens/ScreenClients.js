@@ -1,11 +1,18 @@
-import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import SQLite from 'react-native-sqlite-storage';
-import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
+import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
-import {setInvoiceProfile, setCurrentProfile} from '../src/redux/actions';
+import {setCurrentClient} from '../../src/redux/actions';
 import {useDispatch} from 'react-redux';
-import {createTableProfile} from './database';
+import {createTableClient, deleteClient} from '../../src/database/database';
 import {useSelector} from 'react-redux';
 
 //otevreni databaze InvoiceDB
@@ -20,7 +27,7 @@ const db = SQLite.openDatabase(
   },
 );
 
-export default function ProfileList({navigation}) {
+export default function ScreenClients({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
@@ -45,40 +52,44 @@ export default function ProfileList({navigation}) {
     });
 
   //asynchronni funkce pro nacteni klientu z tabulky clients z databaze
-  const getProfile = async () => {
+  const getClient = async () => {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description from profile where user_id = ?',
+      'select id, name, email, address, descriptive_number, city, ico, dic, description from client where user_id = ?',
       [currUser.id],
     );
 
     var rows = selectQuery.rows;
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
-      console.log(item);
-      let Profile = {
+      //console.log(item);
+      let Client = {
         id: item.id,
         name: item.name,
         email: item.email,
-        address: item.address,
         descriptive_number: item.descriptive_number,
         city: item.city,
-        pays_dph: item.pays_dph,
+        address: item.address,
         ico: item.ico,
         dic: item.dic,
         description: item.description,
       };
-      setProfiles(Profiles => [...Profiles, Profile]);
+      setProfiles(Profiles => [...Profiles, Client]);
     }
+  };
+
+  //smazani klienta z databaze podle id
+  const delClient = async id => {
+    deleteClient(id);
   };
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    createTableProfile();
+    createTableClient();
     if (isFocused) {
-      getProfile();
+      getClient();
     }
   }, [isFocused]);
 
@@ -90,24 +101,34 @@ export default function ProfileList({navigation}) {
           <TouchableOpacity
             style={styles.item}
             onPress={() => {
-              navigation.goBack();
-              dispatch(setInvoiceProfile(item.id));
+              dispatch(setCurrentClient(item));
+              navigation.navigate('Přidat klienta');
             }}>
-            <View style={styles.item_body}>
-              <Text style={styles.title}>{item.name}</Text>
-              {item.description.length === 0 ? null : (
+            <View style={styles.rows}>
+              <View style={styles.item_body}>
+                <Text style={styles.title}>{item.name}</Text>
                 <Text style={styles.description}>{item.description}</Text>
-              )}
+              </View>
+              <TouchableOpacity
+                style={styles.del_button}
+                onPress={() => {
+                  delClient(item.id);
+                  getClient();
+                }}>
+                <FontAwesome
+                  icon={SolidIcons.trashAlt}
+                  style={{fontSize: 20, color: 'red'}}
+                />
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
       />
-
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.navigate('Přidat profil');
-          dispatch(setCurrentProfile());
+          dispatch(setCurrentClient());
+          navigation.navigate('Přidat klienta');
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}
@@ -137,11 +158,14 @@ const styles = StyleSheet.create({
   item: {
     justifyContent: 'center',
     marginHorizontal: 15,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
   },
   title: {
     fontSize: 25,
     margin: 10,
-    color: '#fff',
+    paddingHorizontal: 10,
   },
   description: {
     fontSize: 18,
@@ -149,9 +173,19 @@ const styles = StyleSheet.create({
     margin: 5,
     paddingHorizontal: 10,
   },
+  rows: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   item_body: {
     flex: 1,
-    borderColor: '#000',
-    borderBottomWidth: 2,
+  },
+  del_button: {
+    color: 'red',
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
   },
 });

@@ -4,7 +4,7 @@ import {
   getProducts,
   getInvoiceDay,
   getInvoiceMonth,
-} from '../database';
+} from '../../src/database/database';
 
 export const ReportPDF = async (currUser, choice) => {
   const htmlStyles = `

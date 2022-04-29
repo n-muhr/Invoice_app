@@ -10,9 +10,9 @@ import React, {useEffect, useState} from 'react';
 import SQLite from 'react-native-sqlite-storage';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
-import {setCurrentClient} from '../src/redux/actions';
+import {setCurrentProfile} from '../../src/redux/actions';
 import {useDispatch} from 'react-redux';
-import {createTableClient, deleteClient} from './database';
+import {createTableProfile, deleteProfile} from '../../src/database/database';
 import {useSelector} from 'react-redux';
 
 //otevreni databaze InvoiceDB
@@ -27,7 +27,7 @@ const db = SQLite.openDatabase(
   },
 );
 
-export default function ScreenClients({navigation}) {
+export default function ScreenProfile({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
@@ -52,11 +52,11 @@ export default function ScreenClients({navigation}) {
     });
 
   //asynchronni funkce pro nacteni klientu z tabulky clients z databaze
-  const getClient = async () => {
+  const getProfile = async () => {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, address, descriptive_number, city, ico, dic, description from client where user_id = ?',
+      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description, account, iban, var_symbol, court, section, part from profile where user_id = ?',
       [currUser.id],
     );
 
@@ -64,32 +64,39 @@ export default function ScreenClients({navigation}) {
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
       //console.log(item);
-      let Client = {
+      let Profile = {
         id: item.id,
         name: item.name,
         email: item.email,
+        address: item.address,
         descriptive_number: item.descriptive_number,
         city: item.city,
-        address: item.address,
+        pays_dph: item.pays_dph,
         ico: item.ico,
         dic: item.dic,
         description: item.description,
+        account: item.account,
+        iban: item.iban,
+        var_symbol: item.var_symbol,
+        court: item.court,
+        section: item.section,
+        part: item.part,
       };
-      setProfiles(Profiles => [...Profiles, Client]);
+      setProfiles(Profiles => [...Profiles, Profile]);
     }
   };
 
-  //smazani klienta z databaze podle id
-  const delClient = async id => {
-    deleteClient(id);
+  //smazani profilu z databaze podle id
+  const delProfile = async id => {
+    deleteProfile(id);
   };
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    createTableClient();
+    createTableProfile();
     if (isFocused) {
-      getClient();
+      getProfile();
     }
   }, [isFocused]);
 
@@ -101,8 +108,8 @@ export default function ScreenClients({navigation}) {
           <TouchableOpacity
             style={styles.item}
             onPress={() => {
-              dispatch(setCurrentClient(item));
-              navigation.navigate('Přidat klienta');
+              dispatch(setCurrentProfile(item));
+              navigation.navigate('Přidat profil');
             }}>
             <View style={styles.rows}>
               <View style={styles.item_body}>
@@ -112,8 +119,8 @@ export default function ScreenClients({navigation}) {
               <TouchableOpacity
                 style={styles.del_button}
                 onPress={() => {
-                  delClient(item.id);
-                  getClient();
+                  delProfile(item.id);
+                  getProfile();
                 }}>
                 <FontAwesome
                   icon={SolidIcons.trashAlt}
@@ -127,8 +134,8 @@ export default function ScreenClients({navigation}) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          dispatch(setCurrentClient());
-          navigation.navigate('Přidat klienta');
+          dispatch(setCurrentProfile());
+          navigation.navigate('Přidat profil');
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}

@@ -9,7 +9,11 @@ import {
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
-import {createTableUser, addUser, chechUserCount} from '../database';
+import {
+  createTableUser,
+  addUser,
+  chechUserCount,
+} from '../../src/database/database';
 
 export default function Register({navigation}) {
   const [data, setData] = useState({

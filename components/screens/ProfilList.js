@@ -1,11 +1,11 @@
 import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import SQLite from 'react-native-sqlite-storage';
-import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
+import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
 import {useIsFocused} from '@react-navigation/native';
-import {setInvoiceClient, setCurrentClient} from '../src/redux/actions';
+import {setInvoiceProfile, setCurrentProfile} from '../../src/redux/actions';
 import {useDispatch} from 'react-redux';
-import {createTableClient} from './database';
+import {createTableProfile} from '../../src/database/database';
 import {useSelector} from 'react-redux';
 
 //otevreni databaze InvoiceDB
@@ -20,7 +20,7 @@ const db = SQLite.openDatabase(
   },
 );
 
-export default function ClientList({navigation}) {
+export default function ProfileList({navigation}) {
   const [Profiles, setProfiles] = useState([]);
 
   const dispatch = useDispatch();
@@ -45,11 +45,11 @@ export default function ClientList({navigation}) {
     });
 
   //asynchronni funkce pro nacteni klientu z tabulky clients z databaze
-  const getClient = async () => {
+  const getProfile = async () => {
     setProfiles([]);
 
     let selectQuery = await ExecuteQuery(
-      'select id, name, email, address, descriptive_number, city, ico, dic, description from client where user_id = ?',
+      'select id, name, email, address, descriptive_number, city, pays_dph, ico, dic, description from profile where user_id = ?',
       [currUser.id],
     );
 
@@ -57,27 +57,28 @@ export default function ClientList({navigation}) {
     for (let i = 0; i < rows.length; i++) {
       let item = rows.item(i);
       console.log(item);
-      let Client = {
+      let Profile = {
         id: item.id,
         name: item.name,
         email: item.email,
+        address: item.address,
         descriptive_number: item.descriptive_number,
         city: item.city,
-        address: item.address,
+        pays_dph: item.pays_dph,
         ico: item.ico,
         dic: item.dic,
         description: item.description,
       };
-      setProfiles(Profiles => [...Profiles, Client]);
+      setProfiles(Profiles => [...Profiles, Profile]);
     }
   };
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
+    createTableProfile();
     if (isFocused) {
-      createTableClient();
-      getClient();
+      getProfile();
     }
   }, [isFocused]);
 
@@ -90,7 +91,7 @@ export default function ClientList({navigation}) {
             style={styles.item}
             onPress={() => {
               navigation.goBack();
-              dispatch(setInvoiceClient(item.id));
+              dispatch(setInvoiceProfile(item.id));
             }}>
             <View style={styles.item_body}>
               <Text style={styles.title}>{item.name}</Text>
@@ -105,8 +106,8 @@ export default function ClientList({navigation}) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.navigate('Přidat klienta');
-          dispatch(setCurrentClient());
+          navigation.navigate('Přidat profil');
+          dispatch(setCurrentProfile());
         }}>
         <FontAwesome
           style={{fontSize: 20, color: 'white'}}

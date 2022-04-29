@@ -4,7 +4,7 @@ import Pdf from 'react-native-pdf';
 import {useSelector} from 'react-redux';
 import RNPrint from 'react-native-print';
 import Mailer from 'react-native-mail';
-import {getProfile} from './database';
+import {getProfile} from '../../src/database/database';
 
 export default function InvoicePreview() {
   const {currInvoice, currUser} = useSelector(state => state.invoiceReducer);

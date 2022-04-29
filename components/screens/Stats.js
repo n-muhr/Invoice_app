@@ -11,14 +11,14 @@ import {
   getLastYearInvoice,
   getProducts,
   getLastThreeYearInvoice,
-} from './database';
+} from '../../src/database/database';
 import {useIsFocused} from '@react-navigation/native';
-import LineData from './charts/LineData';
-import TableData from './charts/TableData';
-import BarData from './charts/BarData';
+import LineData from '../charts/LineData';
+import TableData from '../charts/TableData';
+import BarData from '../charts/BarData';
 import {useSelector} from 'react-redux';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import {ReportPDF} from './pdf/ReportPDF';
+import {ReportPDF} from '../pdf/ReportPDF';
 import RNPrint from 'react-native-print';
 
 let tableTitle = ['Celkem'];

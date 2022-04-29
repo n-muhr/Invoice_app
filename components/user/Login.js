@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import FontAwesome, {SolidIcons, RegularIcons} from 'react-native-fontawesome';
-import {createTableUser, verifyUser} from '../database';
+import {createTableUser, verifyUser} from '../../src/database/database';
 import {useIsFocused} from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import {useDispatch} from 'react-redux';

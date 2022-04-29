@@ -14,7 +14,7 @@ import {
   addProductDatabase,
   deleteProduct,
   ExecuteQuery,
-} from './database';
+} from '../../src/database/database';
 import {useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 
